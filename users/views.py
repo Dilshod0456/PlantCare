@@ -1,5 +1,5 @@
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.db.models import Q, Avg
 from datetime import timedelta
@@ -14,17 +14,23 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils import translation
+from django.conf import settings
+
+from .forms import CustomUserCreationForm
 
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            # Multiple auth backends require explicit backend specification.
+            backend = settings.AUTHENTICATION_BACKENDS[0]
+            login(request, user, backend=backend)
+            messages.success(request, "Muvaffaqiyatli ro'yxatdan o'tdingiz!")
             return redirect('users:profile')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
 
 def user_login(request):
