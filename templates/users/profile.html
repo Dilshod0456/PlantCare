@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil - PlantCare AI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-8">
+        {% for message in messages %}
+        <div class="bg-{% if message.tags == 'success' %}eco-green{% else %}red-500{% endif %} text-white p-4 rounded-lg mb-4">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <div class="w-24 h-24 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-user text-white text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Mening profilim</h1>
+        <p class="text-gray-600">Shaxsiy ma'lumotlaringizni boshqaring va sozlamalarni o'zgartiring</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Profile Info -->
+        <div class="lg:col-span-2">
+            <!-- Personal Information -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-user-circle text-eco-green mr-2"></i>
+                        Shaxsiy ma'lumotlar
+                    </h2>
+                    <button id="edit-profile" class="text-eco-green hover:text-eco-dark-green font-medium">
+                        <i class="fas fa-edit mr-1"></i>
+                        Tahrirlash
+                    </button>
+                </div>
+
+                <form id="profile-form" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="profile_form" value="1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ism</label>
+                            <input type="text" name="first_name" value="{{ user.first_name|default:'Ismingiz' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Familiya</label>
+                            <input type="text" name="last_name" value="{{ user.last_name|default:'Familiyangiz' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" readonly>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" value="{{ user.email|default:'siningemail@example.com' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Telefon</label>
+                            <input type="tel" name="phone" value="{{ user.phone|default:'+998 90 123 45 67' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ro'yxatdan o'tgan sana</label>
+                            <input type="text" name="date_joined" value="{{ user.date_joined|date:'d.m.Y'|default:'15.01.2024' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50" readonly disabled>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                            <select name="region" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                                {% for key, value in user.region_choices.items %}
+                                    <option value="{{ key }}" {% if user.region == key %}selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="form-actions" class="hidden mt-6 flex space-x-3">
+                        <button type="submit" class="bg-eco-green text-white px-6 py-2 rounded-lg hover:bg-eco-dark-green transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            Saqlash
+                        </button>
+                        <button type="button" id="cancel-edit" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            Bekor qilish
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Language Settings -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-language text-eco-green mr-2"></i>
+                    Til sozlamalari
+                </h2>
+
+                <form id="language-form" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="language_form" value="1">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Interfeys tili</label>
+                            <select name="interface_language" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                                <option value="uz" {% if request.session.interface_language == 'uz' %}selected{% endif %}>O'zbek tili</option>
+                                <option value="ru" {% if request.session.interface_language == 'ru' %}selected{% endif %}>Русский язык</option>
+                                <option value="en" {% if request.session.interface_language == 'en' %}selected{% endif %}>English</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Natijalar tili</label>
+                            <select name="results_language" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                                <option value="uz" {% if request.session.results_language == 'uz' %}selected{% endif %}>O'zbek tili</option>
+                                <option value="ru" {% if request.session.results_language == 'ru' %}selected{% endif %}>Русский язык</option>
+                                <option value="en" {% if request.session.results_language == 'en' %}selected{% endif %}>English</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="submit" class="bg-eco-green text-white px-6 py-2 rounded-lg hover:bg-eco-dark-green transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            Saqlash
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Password Change -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-lock text-eco-green mr-2"></i>
+                    Parolni o'zgartirish
+                </h2>
+
+                <form id="password-form" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="password_form" value="1">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="id_old_password" class="block text-sm font-medium text-gray-700 mb-2">Joriy parol</label>
+                            <input type="password" name="old_password" id="id_old_password" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" required>
+                            {% if password_form.old_password.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ password_form.old_password.errors.as_text }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="id_new_password1" class="block text-sm font-medium text-gray-700 mb-2">Yangi parol</label>
+                            <input type="password" name="new_password1" id="id_new_password1" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" required>
+                            {% if password_form.new_password1.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ password_form.new_password1.errors.as_text }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="id_new_password2" class="block text-sm font-medium text-gray-700 mb-2">Yangi parolni tasdiqlang</label>
+                            <input type="password" name="new_password2" id="id_new_password2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green" required>
+                            {% if password_form.new_password2.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ password_form.new_password2.errors.as_text }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="submit" class="bg-eco-green text-white px-6 py-2 rounded-lg hover:bg-eco-dark-green transition-colors">
+                            <i class="fas fa-key mr-2"></i>
+                            Parolni o'zgartirish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <!-- Statistics -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chart-bar text-eco-green mr-2"></i>
+                    Statistika
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">Jami tahlillar:</span>
+                        <span class="font-semibold text-gray-900">{{ total_analyses }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">Bu oy:</span>
+                        <span class="font-semibold text-gray-900">{{ monthly_analyses }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">O'rtacha aniqlik:</span>
+                        <span class="font-semibold text-eco-green">{{ average_accuracy }}%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">Eng ko'p:</span>
+                        <span class="font-semibold text-gray-900 text-sm">{{ most_common_disease|default:'N/A' }}</span>
+                    </div>
+                </div>
+                
+                <!-- Progress bar for monthly activity -->
+                <div class="mt-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Oylik faollik</span>
+                        <span class="text-sm font-semibold text-eco-green">{{ monthly_analyses }}/{{ total_analyses|default:1 }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        {% widthratio monthly_analyses total_analyses 100 as progress %}
+                        <div class="bg-eco-green h-2 rounded-full transition-all" style="width: {{ progress|default:0 }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-clock text-eco-green mr-2"></i>
+                    So'nggi faollik
+                </h3>
+
+                <div class="space-y-3">
+                    {% for activity in recent_activities %}
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-eco-green rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">{{ activity.description }}</p>
+                            <p class="text-xs text-gray-500">{{ activity.created_at|timesince }} oldin</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-sm text-gray-600">Faollik yo'q</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'users:history' %}" class="text-eco-green hover:text-eco-dark-green text-sm font-medium">
+                        Barchasini ko'rish <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-bolt text-eco-green mr-2"></i>
+                    Tezkor amallar
+                </h3>
+
+                <div class="space-y-3">
+                    <a href="{% url 'diagnosis:test_image' %}" class="block w-full bg-eco-green text-white text-center py-3 rounded-lg hover:bg-eco-dark-green transition-colors">
+                        <i class="fas fa-camera mr-2"></i>
+                        Yangi tahlil
+                    </a>
+                    <a href="{% url 'users:history' %}" class="block w-full border border-eco-green text-eco-green text-center py-3 rounded-lg hover:bg-eco-green hover:text-white transition-colors">
+                        <i class="fas fa-history mr-2"></i>
+                        Tahlillar tarixi
+                    </a>
+                    <a href="{% url 'faq' %}" class="block w-full border border-gray-300 text-gray-700 text-center py-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-question-circle mr-2"></i>
+                        Yordam
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editProfileBtn = document.getElementById('edit-profile');
+    const profileForm = document.getElementById('profile-form');
+    const formActions = document.getElementById('form-actions');
+    const cancelEditBtn = document.getElementById('cancel-edit');
+    const passwordForm = document.getElementById('password-form');
+    const languageForm = document.getElementById('language-form');
+
+    // Edit profile functionality
+    editProfileBtn.addEventListener('click', () => {
+        const readonlyInputs = profileForm.querySelectorAll('input[readonly]:not([name="date_joined"])');
+        readonlyInputs.forEach(input => {
+            input.removeAttribute('readonly');
+            input.classList.add('bg-white');
+        });
+        formActions.classList.remove('hidden');
+        editProfileBtn.classList.add('hidden');
+    });
+
+    // Cancel edit
+    cancelEditBtn.addEventListener('click', () => {
+        const inputs = profileForm.querySelectorAll('input:not([name="date_joined"])');
+        inputs.forEach(input => {
+            input.setAttribute('readonly', true);
+            input.classList.remove('bg-white');
+        });
+        formActions.classList.add('hidden');
+        editProfileBtn.classList.remove('hidden');
+    });
+
+    // Form submission handler
+    function handleFormSubmit(form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                if (response.ok) {
+                    location.reload(); // Reload to show messages
+                } else {
+                    const error = await response.text();
+                    alert('Xato: ' + error);
+                }
+            } catch (error) {
+                alert('Xato yuz berdi: ' + error.message);
+            }
+        });
+    }
+
+    // Apply submission handler to forms
+    handleFormSubmit(profileForm);
+    handleFormSubmit(passwordForm);
+    handleFormSubmit(languageForm);
+});
+</script>
+{% endblock %}

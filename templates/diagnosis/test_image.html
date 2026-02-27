@@ -1,0 +1,511 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tahlil - PlantCare AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .drop-zone {
+        border: 2px dashed #22c55e;
+        transition: all 0.3s ease;
+    }
+    .drop-zone.dragover {
+        border-color: #16a34a;
+        background-color: #dcfce7;
+    }
+    .progress-bar {
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            Kasallikni aniqlash uchun rasm yuklang
+        </h1>
+        <p class="text-xl text-gray-600">
+            O'simlik rasmini yuklang va AI yordamida kasallikni aniqlang
+        </p>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <form id="upload-form" enctype="multipart/form-data" method="POST" action="{% url 'diagnosis:test_image' %}">
+            {% csrf_token %}
+            
+            <!-- Detection Type Selection -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Aniqlash turi
+                </label>
+                <select id="detection-type" name="detection_type" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                    <option value="">Tanlang...</option>
+                    <option value="disease">Kasallikni aniqlash</option>
+                    <option value="pest">Zararkunandalarni aniqlash</option>
+                </select>
+            </div>
+
+            <!-- Plant Selection -->
+            <div id="plant-selection" class="mb-6 hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    O'simlik turi
+                </label>
+                <select id="plant-type" name="plant_type" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                    <option value="">Avval aniqlash turini tanlang...</option>
+                </select>
+            </div>
+            
+            <!-- Drop Zone -->
+            <div id="drop-zone" class="drop-zone rounded-xl p-12 text-center mb-6">
+                <div id="upload-content">
+                    <i class="fas fa-cloud-upload-alt text-6xl text-eco-green mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                        Rasmni bu yerga tortib qo'ying yoki tanlang
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        JPG, PNG formatlarini qo'llab-quvvatlaymiz (maksimum 10MB)
+                    </p>
+                    <input type="file" id="file-input" name="image" accept="image/*" class="hidden">
+                    <button type="button" id="select-file" class="bg-eco-green text-white px-6 py-3 rounded-lg hover:bg-eco-dark-green transition-colors">
+                        <i class="fas fa-folder-open mr-2"></i>
+                        Fayl tanlash
+                    </button>
+                </div>
+
+                <!-- Preview -->
+                <div id="preview-content" class="hidden">
+                    <img id="preview-image" src="/placeholder.svg" alt="Ko'rinish" class="max-w-full max-h-64 mx-auto rounded-lg mb-4">
+                    <p id="file-name" class="text-gray-700 font-medium mb-2"></p>
+                    <p id="file-size" class="text-gray-500 text-sm mb-4"></p>
+                    <button type="button" id="change-file" class="text-eco-green hover:text-eco-dark-green transition-colors">
+                        <i class="fas fa-edit mr-1"></i>
+                        Faylni o'zgartirish
+                    </button>
+                </div>
+            </div>
+
+            <!-- File Validation Messages -->
+            <div id="validation-message" class="hidden mb-4 p-4 rounded-lg"></div>
+
+            <!-- Analyze Button -->
+            <div class="text-center">
+                <button type="submit" id="analyze-btn" class="bg-eco-green text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-eco-dark-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <span id="analyze-text">
+                        <i class="fas fa-search mr-2"></i>
+                        Tahlil qilish
+                    </span>
+                    <span id="loading-text" class="hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Tahlil qilinmoqda...
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section" class="hidden">
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                <i class="fas fa-clipboard-check text-eco-green mr-2"></i>
+                Tahlil natijalari
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Result Image -->
+                <div>
+                    <img id="result-image" src="/placeholder.svg" alt="Tahlil qilingan rasm" class="w-full rounded-lg shadow-md">
+                </div>
+
+                <!-- Result Details -->
+                <div>
+                    <!-- Disease Name -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Aniqlangan kasallik:</h3>
+                        <div id="disease-name" class="text-2xl font-bold text-eco-green"></div>
+                    </div>
+
+                    <!-- Confidence Level -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Aniqlik darajasi:</h3>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-1 bg-gray-200 rounded-full h-3">
+                                <div id="confidence-bar" class="progress-bar bg-eco-green h-3 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <span id="confidence-text" class="text-lg font-semibold text-gray-900">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Disease Description -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Ta'rif:</h3>
+                        <p id="disease-description" class="text-gray-600"></p>
+                    </div>
+
+                    <!-- AI Recommendations -->
+                    <div class="mb-6">
+                        <button id="recommendations-toggle" class="flex items-center justify-between w-full text-left bg-eco-light-green p-4 rounded-lg hover:bg-green-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-900">
+                                <i class="fas fa-lightbulb text-eco-green mr-2"></i>
+                                AI tavsiyalari
+                            </span>
+                            <i class="fas fa-chevron-down text-eco-green"></i>
+                        </button>
+                        <div id="recommendations-content" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                            <div id="recommendations-text" class="text-gray-700"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="save-result" class="bg-eco-green text-white px-6 py-3 rounded-lg hover:bg-eco-dark-green transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            Natijani saqlash
+                        </button>
+                        <button id="new-analysis" class="border-2 border-eco-green text-eco-green px-6 py-3 rounded-lg hover:bg-eco-green hover:text-white transition-colors">
+                            <i class="fas fa-plus mr-2"></i>
+                            Yangi tahlil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Gallery -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-images text-eco-green mr-2"></i>
+            Demo rasmlar
+        </h2>
+        <p class="text-gray-600 mb-6">
+            Tizimni sinash uchun demo rasmni tanlang
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="demo-image cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow" data-disease="Bacterial Spot">
+                <img src="{% static 'images/demo/bacterial_spot.jpg' %}" alt="Bakterial dog'" class="w-full h-32 object-cover">
+                <div class="p-3 bg-gray-50">
+                    <p class="text-sm font-medium text-gray-900">Bakterial dog'</p>
+                </div>
+            </div>
+            <div class="demo-image cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow" data-disease="Early Blight">
+                <img src="{% static 'images/demo/early_blight.jpg' %}" alt="Erta charcha" class="w-full h-32 object-cover">
+                <div class="p-3 bg-gray-50">
+                    <p class="text-sm font-medium text-gray-900">Erta charcha</p>
+                </div>
+            </div>
+            <div class="demo-image cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow" data-disease="Late Blight">
+                <img src="{% static 'images/demo/late_blight.jpg' %}" alt="Kech charcha" class="w-full h-32 object-cover">
+                <div class="p-3 bg-gray-50">
+                    <p class="text-sm font-medium text-gray-900">Kech charcha</p>
+                </div>
+            </div>
+            <div class="demo-image cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow" data-disease="Healthy">
+                <img src="{% static 'images/demo/healthy.jpg' %}" alt="Sog'lom" class="w-full h-32 object-cover">
+                <div class="p-3 bg-gray-50">
+                    <p class="text-sm font-medium text-gray-900">Sog'lom</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const selectFileBtn = document.getElementById('select-file');
+    const uploadContent = document.getElementById('upload-content');
+    const previewContent = document.getElementById('preview-content');
+    const previewImage = document.getElementById('preview-image');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const changeFileBtn = document.getElementById('change-file');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const uploadForm = document.getElementById('upload-form');
+    const validationMessage = document.getElementById('validation-message');
+    const resultsSection = document.getElementById('results-section');
+    const recommendationsToggle = document.getElementById('recommendations-toggle');
+    const recommendationsContent = document.getElementById('recommendations-content');
+    const demoImages = document.querySelectorAll('.demo-image');
+    const saveResultBtn = document.getElementById('save-result');
+    
+    // New elements for detection type and plant selection
+    const detectionType = document.getElementById('detection-type');
+    const plantSelection = document.getElementById('plant-selection');
+    const plantType = document.getElementById('plant-type');
+    
+    // Plant data from backend
+    const allPlants = [
+        {% for plant in plant_types %}
+        { code: '{{ plant.code }}', name: '{{ plant.name_uz }}' }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Handle detection type change
+    detectionType.addEventListener('change', function() {
+        const selectedType = this.value;
+        
+        if (selectedType) {
+            plantSelection.classList.remove('hidden');
+            plantType.innerHTML = '<option value="">O\'simlikni tanlang...</option>';
+            
+            // Add all plants from backend
+            allPlants.forEach(plant => {
+                const option = document.createElement('option');
+                option.value = plant.code;
+                option.textContent = plant.name;
+                plantType.appendChild(option);
+            });
+            
+            // Disable file upload
+            dropZone.classList.add('opacity-50', 'pointer-events-none');
+            fileInput.disabled = true;
+        } else {
+            plantSelection.classList.add('hidden');
+            dropZone.classList.remove('opacity-50', 'pointer-events-none');
+            fileInput.disabled = true;
+        }
+    });
+    
+    // Handle plant type change
+    plantType.addEventListener('change', function() {
+        if (this.value) {
+            // Enable file upload
+            dropZone.classList.remove('opacity-50', 'pointer-events-none');
+            fileInput.disabled = false;
+        } else {
+            // Disable file upload
+            dropZone.classList.add('opacity-50', 'pointer-events-none');
+            fileInput.disabled = true;
+        }
+    });
+
+    // File selection
+    selectFileBtn.addEventListener('click', () => fileInput.click());
+    changeFileBtn.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    // Handle file selection
+    function handleFile(file) {
+        if (validateFile(file)) {
+            showPreview(file);
+            analyzeBtn.disabled = false;
+        }
+    }
+
+    // File validation
+    function validateFile(file) {
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        const maxSize = 10 * 1024 * 1024; // 10MB
+
+        if (!validTypes.includes(file.type)) {
+            showValidationMessage('Faqat JPG va PNG formatlarini qo\'llab-quvvatlaymiz.', 'error');
+            return false;
+        }
+
+        if (file.size > maxSize) {
+            showValidationMessage('Fayl hajmi 10MB dan oshmasligi kerak.', 'error');
+            return false;
+        }
+
+        hideValidationMessage();
+        return true;
+    }
+
+    // Show file preview
+    function showPreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImage.src = e.target.result;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            uploadContent.classList.add('hidden');
+            previewContent.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Show validation message
+    function showValidationMessage(message, type) {
+        validationMessage.textContent = message;
+        validationMessage.className = `mb-4 p-4 rounded-lg ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+        validationMessage.classList.remove('hidden');
+    }
+
+    // Hide validation message
+    function hideValidationMessage() {
+        validationMessage.classList.add('hidden');
+    }
+
+    // Form submission
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(uploadForm);
+        
+        // Show loading state
+        document.getElementById('analyze-text').classList.add('hidden');
+        document.getElementById('loading-text').classList.remove('hidden');
+        analyzeBtn.disabled = true;
+
+        try {
+            const response = await fetch(uploadForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResults(data);
+                showValidationMessage('Tahlil muvaffaqiyatli yakunlandi!', 'success');
+            } else {
+                showValidationMessage(data.error || 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.', 'error');
+            }
+        } catch (error) {
+            showValidationMessage('Xatolik yuz berdi. Qaytadan urinib ko\'ring.', 'error');
+        } finally {
+            // Reset button state
+            document.getElementById('analyze-text').classList.remove('hidden');
+            document.getElementById('loading-text').classList.add('hidden');
+            analyzeBtn.disabled = false;
+        }
+    });
+class MarkdownFormatter {
+    constructor() {
+        this.rules = [
+            { pattern: /\*\*\*(.*?)\*\*\*/g, replacement: '<b><i>$1</i></b>' }, // Bold va italic
+            { pattern: /\*\*(.*?)\*\*/g, replacement: '<b>$1</b>' }, // Bold
+            { pattern: /\*(.*?)\*/g, replacement: '<i>$1</i>' }, // Italic
+            { pattern: /---(.*?)---/g, replacement: '<s>$1</s>' }, // Strikethrough
+            { pattern: /`([^`]+)`/g, replacement: '<code>$1</code>' }, // Inline code
+            { pattern: /\n# (.*?)(?=\n|$)/g, replacement: '\n<h1>$1</h1>' }, // Sarlavha 1
+            { pattern: /\n## (.*?)(?=\n|$)/g, replacement: '\n<h2>$1</h2>' }, // Sarlavha 2
+            { pattern: /\n### (.*?)(?=\n|$)/g, replacement: '\n<h3>$1</h3>' }, // Sarlavha 3
+            { pattern: /\[(.*?)\]\((.*?)\)/g, replacement: '<a href="$2">$1</a>' }, // Havola
+            { pattern: /\n- (.*?)(?=\n|$)/g, replacement: '\n<li>$1</li>' }, // Ro‘yxat elementi
+            { pattern: /<\/li>\n<li>/g, replacement: '</li><li>' }, // Ro‘yxat elementlarini tozalash
+            { pattern: /<li>.*<\/li>/s, replacement: '<ul>$&</ul>' } // Ro‘yxatni ul tegi bilan o‘rash
+        ];
+    }
+
+    format(text) {
+        let formattedText = text;
+        
+        // Har bir formatlash qoidasini qo‘llash
+        this.rules.forEach(rule => {
+            formattedText = formattedText.replace(rule.pattern, rule.replacement);
+        });
+
+        // Paragraflarni saqlash uchun qator tashlashlar
+        formattedText = formattedText.replace(/\n\n/g, '</p><p>');
+        
+        // Agar matn HTML teglari bilan boshlanmasa, uni p tegiga o‘rash
+        if (!formattedText.match(/^<(h[1-3]|ul|li|p)/)) {
+            formattedText = `<p>${formattedText}</p>`;
+        }
+
+        // Ortiqcha bo‘sh paragraflarni olib tashlash
+        formattedText = formattedText.replace(/<\/p>\s*<p>\s*<\/p>/g, '');
+
+        return formattedText;
+    }
+}
+
+    // Show results
+    function showResults(data) {
+        document.getElementById('result-image').src = data.image_url;
+        document.getElementById('disease-name').textContent = data.disease;
+        document.getElementById('confidence-bar').style.width = data.confidence + '%';
+        document.getElementById('confidence-text').textContent = data.confidence + '%';
+        document.getElementById('disease-description').textContent = data.description;
+        document.getElementById('recommendations-text').innerHTML = data.recommendations;
+
+        resultsSection.classList.remove('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Recommendations toggle
+    recommendationsToggle.addEventListener('click', () => {
+        const isHidden = recommendationsContent.classList.contains('hidden');
+        recommendationsContent.classList.toggle('hidden');
+        const icon = recommendationsToggle.querySelector('i:last-child');
+        icon.className = isHidden ? 'fas fa-chevron-up text-eco-green' : 'fas fa-chevron-down text-eco-green';
+    });
+
+    // Demo images
+    demoImages.forEach(img => {
+        img.addEventListener('click', () => {
+            const disease = img.dataset.disease;
+            const imgSrc = img.querySelector('img').src;
+            
+            fetch(imgSrc)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], `${disease.toLowerCase().replace(' ', '_')}.jpg`, { type: 'image/jpeg' });
+                    handleFile(file);
+                });
+        });
+    });
+
+    // New analysis button
+    document.getElementById('new-analysis').addEventListener('click', () => {
+        uploadContent.classList.remove('hidden');
+        previewContent.classList.add('hidden');
+        resultsSection.classList.add('hidden');
+        analyzeBtn.disabled = true;
+        fileInput.value = '';
+        hideValidationMessage();
+    });
+
+    // Save result button (you may need to implement a separate endpoint for this)
+    saveResultBtn.addEventListener('click', () => {
+        showValidationMessage('Natija muvaffaqiyatli saqlandi!', 'success');
+    });
+});
+</script>
+{% endblock %}

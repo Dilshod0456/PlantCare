@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}O'simlik Do'koni{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-to-r from-eco-green via-emerald-500 to-sky-500 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:py-20 text-center">
+        <p class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-sm font-semibold">🌿 Yangi o'simliklar yig'indisi</p>
+        <h1 class="mt-4 text-4xl sm:text-5xl font-bold tracking-tight">O'simlik Do'koni</h1>
+        <p class="mt-4 text-lg text-white/90 max-w-2xl mx-auto">Uyingiz yoki bog'ingiz uchun sog'lom, chiroyli va parvarishi oson o'simliklarni toping.</p>
+        <div class="mt-8 flex justify-center gap-3">
+            <a href="{% url 'shop:product_list' %}" class="inline-flex items-center px-6 py-3 rounded-xl bg-white text-eco-dark-green font-semibold shadow-lg hover:-translate-y-0.5 transition">
+                <i class="fas fa-leaf mr-2"></i> Mahsulotlarni ko'rish
+            </a>
+            <a href="{% url 'diagnosis:test_image' %}" class="inline-flex items-center px-6 py-3 rounded-xl bg-white/15 text-white font-semibold border border-white/30 hover:bg-white/20 transition">
+                <i class="fas fa-search mr-2"></i> Tahlil qilish
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <p class="text-sm text-eco-dark-gray font-semibold uppercase tracking-wide">Kategoriyalar</p>
+            <h2 class="text-2xl font-bold text-gray-900">O'simlik turlari</h2>
+        </div>
+        <a href="{% url 'shop:product_list' %}" class="text-eco-green font-semibold hover:text-eco-dark-green">Barchasini ko'rish →</a>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for category in categories %}
+        <a href="{% url 'shop:product_list' %}?category={{ category.slug }}" class="group">
+            <div class="h-full rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition p-5 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <div class="h-12 w-12 rounded-xl bg-eco-light-green flex items-center justify-center text-eco-dark-green text-xl">
+                        {% if category.icon %}
+                        <i class="{{ category.icon }}"></i>
+                        {% else %}
+                        <i class="fas fa-leaf"></i>
+                        {% endif %}
+                    </div>
+                    <span class="text-xs font-semibold text-eco-dark-gray px-3 py-1 rounded-full bg-eco-light-green/70">Faol</span>
+                </div>
+                <div>
+                    <p class="text-lg font-semibold text-gray-900 group-hover:text-eco-green">{{ category.name }}</p>
+                    <p class="text-sm text-gray-600 overflow-hidden" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ category.description|default:""|truncatewords:15 }}</p>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full text-center text-gray-500">Kategoriyalar mavjud emas</div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="bg-white py-12 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <p class="text-sm text-eco-dark-gray font-semibold uppercase tracking-wide">Tanlanganlar</p>
+                <h2 class="text-2xl font-bold text-gray-900">Ommabop mahsulotlar</h2>
+            </div>
+            <a href="{% url 'shop:product_list' %}" class="text-eco-green font-semibold hover:text-eco-dark-green">Barchasini ko'rish →</a>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {% for product in featured_products %}
+            <div class="rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                {% if product.main_image %}
+                <div class="relative h-52 overflow-hidden bg-eco-gray">
+                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                    {% if not product.is_in_stock %}
+                    <span class="absolute top-3 right-3 bg-gray-900 text-white text-xs px-3 py-1 rounded-full">Mavjud emas</span>
+                    {% elif product.has_discount %}
+                    <span class="absolute top-3 right-3 bg-rose-500 text-white text-xs px-3 py-1 rounded-full">-{{ product.discount_percentage|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+                {% elif product.image_2 %}
+                <div class="relative h-52 overflow-hidden bg-eco-gray">
+                    <img src="{{ product.image_2.url }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                    {% if not product.is_in_stock %}
+                    <span class="absolute top-3 right-3 bg-gray-900 text-white text-xs px-3 py-1 rounded-full">Mavjud emas</span>
+                    {% elif product.has_discount %}
+                    <span class="absolute top-3 right-3 bg-rose-500 text-white text-xs px-3 py-1 rounded-full">-{{ product.discount_percentage|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+                {% elif product.image_3 %}
+                <div class="relative h-52 overflow-hidden bg-eco-gray">
+                    <img src="{{ product.image_3.url }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                    {% if not product.is_in_stock %}
+                    <span class="absolute top-3 right-3 bg-gray-900 text-white text-xs px-3 py-1 rounded-full">Mavjud emas</span>
+                    {% elif product.has_discount %}
+                    <span class="absolute top-3 right-3 bg-rose-500 text-white text-xs px-3 py-1 rounded-full">-{{ product.discount_percentage|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+                {% elif product.image_4 %}
+                <div class="relative h-52 overflow-hidden bg-eco-gray">
+                    <img src="{{ product.image_4.url }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                    {% if not product.is_in_stock %}
+                    <span class="absolute top-3 right-3 bg-gray-900 text-white text-xs px-3 py-1 rounded-full">Mavjud emas</span>
+                    {% elif product.has_discount %}
+                    <span class="absolute top-3 right-3 bg-rose-500 text-white text-xs px-3 py-1 rounded-full">-{{ product.discount_percentage|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="h-52 bg-eco-gray flex items-center justify-center text-eco-dark-gray">
+                    <i class="fas fa-seedling text-3xl"></i>
+                </div>
+                {% endif %}
+
+                <div class="p-5 flex-1 flex flex-col gap-3">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ product.name }}</h3>
+                        {% if product.is_featured %}
+                        <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">Ommabop</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-600 overflow-hidden" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ product.short_description|default:""|truncatewords:12 }}</p>
+                    <div class="mt-auto flex items-center justify-between">
+                        <div>
+                            {% if product.has_discount %}
+                            <p class="text-sm text-gray-500 line-through">{{ product.original_price|default:product.price|floatformat:0 }} so'm</p>
+                            {% endif %}
+                            <p class="text-xl font-bold text-eco-dark-green">{{ product.price|floatformat:0 }} so'm</p>
+                        </div>
+                        <a href="{% url 'shop:product_detail' product.slug %}" class="inline-flex items-center px-4 py-2 rounded-lg bg-eco-green text-white font-semibold hover:bg-eco-dark-green transition">
+                            Ko'rish
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500">Hozircha mahsulotlar yo'q</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="bg-eco-gray py-12">
+    <div class="max-w-7xl mx-auto px-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+            <div class="h-12 w-12 rounded-xl bg-eco-light-green flex items-center justify-center text-eco-dark-green text-xl mb-3">
+                <i class="fas fa-truck"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Tez yetkazib berish</h3>
+            <p class="text-sm text-gray-600 mt-2">Shahar bo'ylab 1-2 kun ichida xavfsiz yetkazib beramiz.</p>
+        </div>
+        <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+            <div class="h-12 w-12 rounded-xl bg-eco-light-green flex items-center justify-center text-eco-dark-green text-xl mb-3">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Sifat kafolati</h3>
+            <p class="text-sm text-gray-600 mt-2">Har bir o'simlik sog'lom va parvarishlangan holda yetkaziladi.</p>
+        </div>
+        <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+            <div class="h-12 w-12 rounded-xl bg-eco-light-green flex items-center justify-center text-eco-dark-green text-xl mb-3">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Doimiy yordam</h3>
+            <p class="text-sm text-gray-600 mt-2">Parvarish bo'yicha savollarga 24/7 javob beramiz.</p>
+        </div>
+        <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+            <div class="h-12 w-12 rounded-xl bg-eco-light-green flex items-center justify-center text-eco-dark-green text-xl mb-3">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Parvarish qo'llanmalari</h3>
+            <p class="text-sm text-gray-600 mt-2">Har bir o'simlik uchun aniq va sodda ko'rsatmalar.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

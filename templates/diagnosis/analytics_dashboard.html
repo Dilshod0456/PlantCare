@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Analitika - PlantCare AI{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-chart-bar text-eco-green mr-2"></i>
+            Analitika Dashboard
+        </h1>
+        <p class="text-gray-600">Sistema statistikasi va ko'rsatkichlar</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Users -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                </div>
+                <span class="text-sm text-gray-500">+{{ users_month }} bu oy</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900">{{ total_users }}</h3>
+            <p class="text-sm text-gray-600">Jami foydalanuvchilar</p>
+        </div>
+
+        <!-- Total Analyses -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microscope text-green-600 text-xl"></i>
+                </div>
+                <span class="text-sm text-gray-500">+{{ analyses_month }} bu oy</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900">{{ total_analyses }}</h3>
+            <p class="text-sm text-gray-600">Jami tahlillar</p>
+        </div>
+
+        <!-- Average Accuracy -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-percentage text-yellow-600 text-xl"></i>
+                </div>
+                <span class="text-sm text-green-500">
+                    <i class="fas fa-arrow-up mr-1"></i>Yaxshi
+                </span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900">{{ avg_accuracy }}%</h3>
+            <p class="text-sm text-gray-600">O'rtacha aniqlik</p>
+        </div>
+
+        <!-- Total Diseases -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-virus text-red-600 text-xl"></i>
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900">{{ total_diseases }}</h3>
+            <p class="text-sm text-gray-600">Kasalliklar bazasi</p>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Daily Analyses Chart -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-chart-line text-eco-green mr-2"></i>
+                Kunlik tahlillar (30 kun)
+            </h2>
+            <canvas id="dailyChart"></canvas>
+        </div>
+
+        <!-- Top Diseases Chart -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-chart-pie text-eco-green mr-2"></i>
+                Eng ko'p aniqlangan kasalliklar
+            </h2>
+            <canvas id="diseaseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Analyses -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-clock text-eco-green mr-2"></i>
+                So'nggi tahlillar
+            </h2>
+            <div class="space-y-3">
+                {% for analysis in recent_analyses %}
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ analysis.image.url }}" alt="" class="w-10 h-10 rounded object-cover">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">{{ analysis.disease_name }}</p>
+                            <p class="text-xs text-gray-500">{{ analysis.user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-eco-green">{{ analysis.accuracy|floatformat:0 }}%</p>
+                        <p class="text-xs text-gray-500">{{ analysis.created_at|date:"d.m H:i" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Active Users -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-user-check text-eco-green mr-2"></i>
+                Faol foydalanuvchilar (bu oy)
+            </h2>
+            <div class="space-y-3">
+                {% for user in active_users %}
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-eco-green rounded-full flex items-center justify-center">
+                            <span class="text-white font-medium text-sm">{{ user.user__username|first|upper }}</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-900">{{ user.user__username }}</p>
+                    </div>
+                    <span class="text-sm text-gray-600">{{ user.analysis_count }} ta tahlil</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Daily Analysis Chart
+const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+const dailyChart = new Chart(dailyCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for item in daily_data %}'{{ item.date }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Tahlillar soni',
+            data: [{% for item in daily_data %}{{ item.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
+    }
+});
+
+// Disease Distribution Chart
+const diseaseCtx = document.getElementById('diseaseChart').getContext('2d');
+const diseaseChart = new Chart(diseaseCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for stat in disease_stats %}'{{ stat.disease_name|truncatewords:3 }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for stat in disease_stats %}{{ stat.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            backgroundColor: [
+                '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6',
+                '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

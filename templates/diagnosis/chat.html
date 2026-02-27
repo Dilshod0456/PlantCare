@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "AI Chat" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-eco-green text-white px-6 py-4">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="fas fa-robot mr-3"></i>
+                {% trans "AI Yordamchi" %}
+            </h1>
+            <p class="text-eco-light-green text-sm mt-1">
+                {% trans "O'simlik kasalliklari bo'yicha savollaringizni bering" %}
+            </p>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="h-96 overflow-y-auto p-6 bg-gray-50" id="chat-container">
+            <div class="space-y-4" id="chat-messages">
+                <!-- Welcome message -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-eco-green rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 max-w-xs lg:max-w-md">
+                        <p class="text-gray-800">
+                            {% trans "Salom! Men o'simlik kasalliklari bo'yicha AI yordamchiman. Savolingizni bering." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="border-t bg-white p-4">
+            <form id="chat-form" class="flex space-x-3">
+                {% csrf_token %}
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        id="question" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-transparent" 
+                        placeholder="{% trans 'Savolingizni yozing...' %}"
+                        required
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    id="send-button"
+                    class="bg-eco-green text-white px-6 py-2 rounded-lg hover:bg-eco-dark-green transition-colors flex items-center"
+                >
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    {% trans "Yuborish" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const questionInput = document.getElementById('question');
+    const sendButton = document.getElementById('send-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatContainer = document.getElementById('chat-container');
+
+    function addMessage(content, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex items-start space-x-3 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
+        
+        const iconDiv = document.createElement('div');
+        iconDiv.className = `w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+            isUser ? 'bg-blue-500' : 'bg-eco-green'
+        }`;
+        iconDiv.innerHTML = `<i class="fas fa-${isUser ? 'user' : 'robot'} text-white text-sm"></i>`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = `rounded-lg shadow p-4 max-w-xs lg:max-w-md ${
+            isUser ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'
+        }`;
+        contentDiv.innerHTML = `<p>${content}</p>`;
+        
+        messageDiv.appendChild(iconDiv);
+        messageDiv.appendChild(contentDiv);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'typing-indicator';
+        typingDiv.className = 'flex items-start space-x-3';
+        typingDiv.innerHTML = `
+            <div class="w-8 h-8 bg-eco-green rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-robot text-white text-sm"></i>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4 max-w-xs lg:max-w-md">
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(typingDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function hideTyping() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const question = questionInput.value.trim();
+        if (!question) return;
+        
+        // Add user message
+        addMessage(question, true);
+        
+        // Clear input
+        questionInput.value = '';
+        
+        // Disable send button
+        sendButton.disabled = true;
+        sendButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{% trans "Yuborilmoqda..." %}';
+        
+        // Show typing indicator
+        showTyping();
+        
+        try {
+            const response = await fetch('{% url "chat_ai" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    question: question,
+                    lang: '{{ request.LANGUAGE_CODE }}'
+                })
+            });
+            
+            const data = await response.json();
+            
+            hideTyping();
+            
+            if (data.error) {
+                addMessage(`Xato: ${data.message || 'Noma\'lum xato'}`, false);
+            } else {
+                addMessage(data.answer, false);
+            }
+            
+        } catch (error) {
+            hideTyping();
+            addMessage('Xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.', false);
+            console.error('Chat error:', error);
+        } finally {
+            // Re-enable send button
+            sendButton.disabled = false;
+            sendButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>{% trans "Yuborish" %}';
+            questionInput.focus();
+        }
+    });
+    
+    // Focus on input when page loads
+    questionInput.focus();
+});
+</script>
+{% endblock %}

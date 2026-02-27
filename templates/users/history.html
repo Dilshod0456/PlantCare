@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+
+{% block title %}Tahlillar tarixi - PlantCare AI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Tahlillar tarixi</h1>
+            <p class="text-gray-600">Barcha o'tkazilgan tahlillaringizni ko'ring va boshqaring</p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            {% if user.is_authenticated %}
+            <button id="export-btn" class="bg-eco-green text-white px-6 py-3 rounded-lg hover:bg-eco-dark-green transition-colors">
+                <i class="fas fa-download mr-2"></i>
+                PDF/Excel yuklab olish
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Date Filter -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Sana bo'yicha</label>
+                <select id="date-filter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                    <option value="">Barcha sanalar</option>
+                    <option value="today">Bugun</option>
+                    <option value="week">Bu hafta</option>
+                    <option value="month">Bu oy</option>
+                    <option value="year">Bu yil</option>
+                </select>
+            </div>
+
+            <!-- Disease Filter -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kasallik bo'yicha</label>
+                <select id="disease-filter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                    <option value="">Barcha kasalliklar</option>
+                    <option value="bacterial-spot">Bacterial Spot</option>
+                    <option value="early-blight">Early Blight</option>
+                    <option value="late-blight">Late Blight</option>
+                    <option value="healthy">Sog'lom</option>
+                </select>
+            </div>
+
+            <!-- Confidence Filter -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Aniqlik darajasi</label>
+                <select id="confidence-filter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                    <option value="">Barcha natijalar</option>
+                    <option value="high">Yuqori (80%+)</option>
+                    <option value="medium">O'rta (60-79%)</option>
+                    <option value="low">Past (60% dan kam)</option>
+                </select>
+            </div>
+
+            <!-- Search -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Qidirish</label>
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Kasallik nomi..." class="w-full border border-gray-300 rounded-lg px-3 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-eco-green">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center mt-4">
+            <button id="clear-filters" class="text-eco-green hover:text-eco-dark-green text-sm font-medium">
+                <i class="fas fa-times mr-1"></i>
+                Filtrlarni tozalash
+            </button>
+            <div class="text-sm text-gray-600">
+                Jami: <span id="total-count">{{ images_paginated.paginator.count|default:0 }}</span> ta natija
+            </div>
+        </div>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-4">
+            <span class="text-sm font-medium text-gray-700">Ko'rinish:</span>
+            <div class="flex bg-gray-100 rounded-lg p-1">
+                <button id="card-view" class="px-3 py-1 rounded-md text-sm font-medium bg-white text-gray-900 shadow-sm">
+                    <i class="fas fa-th-large mr-1"></i>
+                    Kartalar
+                </button>
+                <button id="table-view" class="px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-list mr-1"></i>
+                    Jadval
+                </button>
+            </div>
+        </div>
+
+        <!-- Sort -->
+        <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium text-gray-700">Saralash:</span>
+            <select id="sort-select" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eco-green">
+                <option value="date-desc">Sana (yangi birinchi)</option>
+                <option value="date-asc">Sana (eski birinchi)</option>
+                <option value="confidence-desc">Aniqlik (yuqori birinchi)</option>
+                <option value="confidence-asc">Aniqlik (past birinchi)</option>
+                <option value="disease-asc">Kasallik (A-Z)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="results-container">
+        <!-- Card View -->
+        <div id="card-view-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if images_paginated %}
+                {% for image in images_paginated %}
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start space-x-4">
+                        <img src="{{ image.image.url }}" alt="{{ image.disease_name }}" class="w-16 h-16 rounded-lg object-cover">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900">{{ image.disease_name|default:"Noma'lum" }}</h3>
+                                <span class="text-sm text-gray-500">{{ image.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 mb-3">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-eco-green h-2 rounded-full" style="width: {{ image.accuracy|default:0 }}%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">{{ image.accuracy|default:0|floatformat:0 }}%</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">
+                                {{ image.ai_result|truncatewords:15|default:"AI tavsiya olish..." }}
+                            </p>
+                            <div class="flex items-center space-x-3">
+                                <a href="{{ image.image.url }}" target="_blank" class="text-eco-green hover:text-eco-dark-green text-sm font-medium">
+                                    <i class="fas fa-eye mr-1"></i>Ko'rish
+                                </a>
+                                <a href="{{ image.image.url }}" download class="text-eco-green hover:text-eco-dark-green text-sm font-medium">
+                                    <i class="fas fa-download mr-1"></i>Yuklab olish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-3 text-center py-12">
+                    <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">Hech qanday tahlil topilmadi</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Table View -->
+        <div id="table-view-container" class="hidden bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rasm</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kasallik</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aniqlik</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sana</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% if images_paginated %}
+                            {% for image in images_paginated %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="{{ image.image.url }}" alt="{{ image.disease_name }}" class="w-12 h-12 rounded-lg object-cover">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ image.disease_name|default:"Noma'lum" }}</div>
+                                    <div class="text-sm text-gray-500">{{ image.ai_result|truncatewords:5 }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2 w-16 mr-2">
+                                            <div class="bg-eco-green h-2 rounded-full" style="width: {{ image.accuracy|default:0 }}%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">{{ image.accuracy|default:0|floatformat:0 }}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ image.created_at|date:"d.m.Y H:i" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <a href="{{ image.image.url }}" target="_blank" class="text-eco-green hover:text-eco-dark-green">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ image.image.url }}" download class="text-eco-green hover:text-eco-dark-green">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                    <i class="fas fa-folder-open text-4xl text-gray-300 mb-4"></i>
+                                    <p>Hech qanday tahlil topilmadi</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if images_paginated %}
+    <div class="flex items-center justify-between mt-8">
+        <div class="text-sm text-gray-700">
+            <span>Ko'rsatilmoqda </span>
+            <span class="font-medium">{{ images_paginated.start_index }}</span>
+            <span> dan </span>
+            <span class="font-medium">{{ images_paginated.end_index }}</span>
+            <span> gacha, jami </span>
+            <span class="font-medium">{{ images_paginated.paginator.count }}</span>
+            <span> ta natija</span>
+        </div>
+        <div class="flex space-x-2">
+            {% if images_paginated.has_previous %}
+                <a href="?page={{ images_paginated.previous_page_number }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-chevron-left mr-1"></i>
+                    Oldingi
+                </a>
+            {% else %}
+                <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg disabled:opacity-50" disabled>
+                    <i class="fas fa-chevron-left mr-1"></i>
+                    Oldingi
+                </button>
+            {% endif %}
+            
+            {% for num in images_paginated.paginator.page_range %}
+                {% if images_paginated.number == num %}
+                    <button class="px-3 py-2 text-sm font-medium text-white bg-eco-green border border-eco-green rounded-lg">{{ num }}</button>
+                {% elif num > images_paginated.number|add:'-3' and num < images_paginated.number|add:'3' %}
+                    <a href="?page={{ num }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if images_paginated.has_next %}
+                <a href="?page={{ images_paginated.next_page_number }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Keyingi
+                    <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+            {% else %}
+                <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg disabled:opacity-50" disabled>
+                    Keyingi
+                    <i class="fas fa-chevron-right ml-1"></i>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-12">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-search text-gray-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Hech narsa topilmadi</h3>
+        <p class="text-gray-600 mb-6">Qidiruv mezonlaringizga mos natijalar topilmadi.</p>
+        <button id="clear-search" class="bg-eco-green text-white px-6 py-3 rounded-lg hover:bg-eco-dark-green transition-colors">
+            Qidiruvni tozalash
+        </button>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div id="export-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-download text-eco-green mr-2"></i>
+            Ma'lumotlarni eksport qilish
+        </h3>
+        <p class="text-gray-600 mb-6">
+            Qaysi formatda yuklab olishni xohlaysiz?
+        </p>
+        <div class="space-y-3 mb-6">
+            <label class="flex items-center">
+                <input type="radio" name="export-format" value="pdf" class="text-eco-green focus:ring-eco-green" checked>
+                <span class="ml-3">
+                    <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                    PDF format
+                </span>
+            </label>
+            <label class="flex items-center">
+                <input type="radio" name="export-format" value="excel" class="text-eco-green focus:ring-eco-green">
+                <span class="ml-3">
+                    <i class="fas fa-file-excel text-green-500 mr-2"></i>
+                    Excel format
+                </span>
+            </label>
+        </div>
+        <div class="flex space-x-3">
+            <button id="export-confirm" class="flex-1 bg-eco-green text-white px-4 py-2 rounded-lg hover:bg-eco-dark-green transition-colors">
+                Yuklab olish
+            </button>
+            <button id="export-cancel" class="flex-1 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                Bekor qilish
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cardViewBtn = document.getElementById('card-view');
+    const tableViewBtn = document.getElementById('table-view');
+    const cardViewContainer = document.getElementById('card-view-container');
+    const tableViewContainer = document.getElementById('table-view-container');
+    const exportBtn = document.getElementById('export-btn');
+    const exportModal = document.getElementById('export-modal');
+    const exportConfirm = document.getElementById('export-confirm');
+    const exportCancel = document.getElementById('export-cancel');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+
+    // View toggle
+    cardViewBtn.addEventListener('click', () => {
+        cardViewBtn.className = 'px-3 py-1 rounded-md text-sm font-medium bg-white text-gray-900 shadow-sm';
+        tableViewBtn.className = 'px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900';
+        cardViewContainer.classList.remove('hidden');
+        tableViewContainer.classList.add('hidden');
+    });
+
+    tableViewBtn.addEventListener('click', () => {
+        tableViewBtn.className = 'px-3 py-1 rounded-md text-sm font-medium bg-white text-gray-900 shadow-sm';
+        cardViewBtn.className = 'px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900';
+        tableViewContainer.classList.remove('hidden');
+        cardViewContainer.classList.add('hidden');
+    });
+
+    // Export modal
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            exportModal.classList.remove('hidden');
+        });
+    }
+
+    exportCancel.addEventListener('click', () => {
+        exportModal.classList.add('hidden');
+    });
+
+    exportConfirm.addEventListener('click', () => {
+        const formatRadio = document.querySelector('input[name="export-format"]:checked');
+        if (formatRadio) {
+            const format = formatRadio.value;
+            // Build export URL with current filters
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('export-format', format);
+            window.location.href = '{% url "users:history" %}?' + urlParams.toString();
+            exportModal.classList.add('hidden');
+        } else {
+            alert('Iltimos, format tanlang');
+        }
+    });
+
+    // Clear filters
+    clearFiltersBtn.addEventListener('click', () => {
+        window.location.href = '{% url "users:history" %}';
+    });
+
+    // Apply filters
+    function applyFilters() {
+        const urlParams = new URLSearchParams();
+        
+        const dateFilter = document.getElementById('date-filter').value;
+        const diseaseFilter = document.getElementById('disease-filter').value;
+        const confidenceFilter = document.getElementById('confidence-filter').value;
+        const searchInput = document.getElementById('search-input').value;
+        const sortSelect = document.getElementById('sort-select').value;
+        
+        if (dateFilter) urlParams.set('date-filter', dateFilter);
+        if (diseaseFilter) urlParams.set('disease-filter', diseaseFilter);
+        if (confidenceFilter) urlParams.set('confidence-filter', confidenceFilter);
+        if (searchInput) urlParams.set('search-input', searchInput);
+        if (sortSelect) urlParams.set('sort-select', sortSelect);
+        
+        window.location.href = '{% url "users:history" %}?' + urlParams.toString();
+    }
+
+    // Filter functionality
+    const filters = ['date-filter', 'disease-filter', 'confidence-filter', 'sort-select'];
+    filters.forEach(filterId => {
+        const element = document.getElementById(filterId);
+        if (element) {
+            element.addEventListener('change', applyFilters);
+        }
+    });
+
+    // Search functionality with debounce
+    let searchTimeout;
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                applyFilters();
+            }, 500);
+        });
+    }
+    
+    // Restore filter values from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('date-filter')) {
+        document.getElementById('date-filter').value = urlParams.get('date-filter');
+    }
+    if (urlParams.has('disease-filter')) {
+        document.getElementById('disease-filter').value = urlParams.get('disease-filter');
+    }
+    if (urlParams.has('confidence-filter')) {
+        document.getElementById('confidence-filter').value = urlParams.get('confidence-filter');
+    }
+    if (urlParams.has('search-input')) {
+        document.getElementById('search-input').value = urlParams.get('search-input');
+    }
+    if (urlParams.has('sort-select')) {
+        document.getElementById('sort-select').value = urlParams.get('sort-select');
+    }
+});
+</script>
+{% endblock %}

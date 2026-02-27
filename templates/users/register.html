@@ -1,0 +1,519 @@
+{% extends 'base.html' %}
+
+{% block title %}Ro'yxatdan o'tish - PlantCare AI{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="w-16 h-16 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-leaf text-white text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Ro'yxatdan o'ting</h2>
+            <p class="text-gray-600">PlantCare AI bilan o'simliklaringizni himoya qiling</p>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <form id="register-form" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Name Fields -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Ism *
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="first_name" name="first_name" required 
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                                   placeholder="Ismingiz">
+                            <i class="fas fa-user absolute left-3 top-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Familiya *
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="last_name" name="last_name" required 
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                                   placeholder="Familiyangiz">
+                            <i class="fas fa-user absolute left-3 top-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email manzil *
+                    </label>
+                    <div class="relative">
+                        <input type="email" id="email" name="email" required 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                               placeholder="example@email.com">
+                        <i class="fas fa-envelope absolute left-3 top-4 text-gray-400"></i>
+                    </div>
+                    <div id="email-validation" class="hidden mt-1 text-sm"></div>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                        Telefon raqam
+                    </label>
+                    <div class="relative">
+                        <input type="tel" id="phone" name="phone" 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                               placeholder="+998 90 123 45 67">
+                        <i class="fas fa-phone absolute left-3 top-4 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Parol *
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                               placeholder="Kamida 8 ta belgi">
+                        <i class="fas fa-lock absolute left-3 top-4 text-gray-400"></i>
+                        <button type="button" id="toggle-password" class="absolute right-3 top-4 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- Password Strength Indicator -->
+                    <div class="mt-2">
+                        <div class="flex space-x-1">
+                            <div id="strength-1" class="h-1 w-1/4 bg-gray-200 rounded"></div>
+                            <div id="strength-2" class="h-1 w-1/4 bg-gray-200 rounded"></div>
+                            <div id="strength-3" class="h-1 w-1/4 bg-gray-200 rounded"></div>
+                            <div id="strength-4" class="h-1 w-1/4 bg-gray-200 rounded"></div>
+                        </div>
+                        <p id="strength-text" class="text-xs text-gray-500 mt-1">Parol kuchini tekshiring</p>
+                    </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Parolni tasdiqlang *
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="confirm_password" name="confirm_password" required 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                               placeholder="Parolni qayta kiriting">
+                        <i class="fas fa-lock absolute left-3 top-4 text-gray-400"></i>
+                        <button type="button" id="toggle-confirm-password" class="absolute right-3 top-4 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="password-match" class="hidden mt-1 text-sm"></div>
+                </div>
+
+                <!-- Terms and Privacy -->
+                <div class="space-y-3">
+                    <label class="flex items-start">
+                        <input type="checkbox" id="terms" name="terms" required class="mt-1 text-eco-green focus:ring-eco-green border-gray-300 rounded">
+                        <span class="ml-3 text-sm text-gray-600">
+                            Men <a href="#" class="text-eco-green hover:text-eco-dark-green font-medium">Foydalanish shartlari</a> 
+                            va <a href="#" class="text-eco-green hover:text-eco-dark-green font-medium">Maxfiylik siyosati</a> 
+                            bilan tanishdim va roziman *
+                        </span>
+                    </label>
+                    
+                    <label class="flex items-start">
+                        <input type="checkbox" id="newsletter" name="newsletter" class="mt-1 text-eco-green focus:ring-eco-green border-gray-300 rounded">
+                        <span class="ml-3 text-sm text-gray-600">
+                            Yangiliklar va takliflar haqida email orqali xabar olishni xohlayman
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Error Messages -->
+                <div id="error-messages" class="hidden space-y-2"></div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="register-btn" 
+                        class="w-full bg-eco-green text-white py-3 rounded-lg font-semibold hover:bg-eco-dark-green transition-colors focus:outline-none focus:ring-2 focus:ring-eco-green focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span id="register-text">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Ro'yxatdan o'tish
+                    </span>
+                    <span id="register-loading" class="hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Ro'yxatdan o'tilyapti...
+                    </span>
+                </button>
+
+                <!-- Divider -->
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">yoki</span>
+                    </div>
+                </div>
+
+                <!-- Social Registration -->
+                <button type="button" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
+                    <i class="fab fa-google text-red-500 mr-2"></i>
+                    Google orqali ro'yxatdan o'tish
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    Allaqachon hisobingiz bormi? 
+                    <a href="{% url 'login' %}" class="text-eco-green hover:text-eco-dark-green font-medium">
+                        Kirish
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="bg-eco-light-green rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-eco-dark-green mb-3 text-center">
+                <i class="fas fa-star mr-2"></i>
+                Ro'yxatdan o'tish afzalliklari
+            </h3>
+            <div class="space-y-2 text-sm text-eco-dark-green">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2 text-eco-green"></i>
+                    Tahlillar tarixini saqlash
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2 text-eco-green"></i>
+                    PDF/Excel formatida yuklab olish
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2 text-eco-green"></i>
+                    Shaxsiy statistika va hisobotlar
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2 text-eco-green"></i>
+                    Yangi xususiyatlardan birinchi bo'lib foydalanish
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+        <div class="w-16 h-16 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-check text-white text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Muvaffaqiyatli ro'yxatdan o'tdingiz!</h3>
+        <p class="text-gray-600 mb-6">
+            Emailingizga tasdiqlash havolasi yuborildi. 
+            Hisobingizni faollashtirish uchun emailni tekshiring.
+        </p>
+        <div class="space-y-3">
+            <button id="go-to-login" class="w-full bg-eco-green text-white py-3 rounded-lg font-semibold hover:bg-eco-dark-green transition-colors">
+                Kirish sahifasiga o'tish
+            </button>
+            <button id="resend-email" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                Emailni qayta yuborish
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('register-form');
+    const registerBtn = document.getElementById('register-btn');
+    const registerText = document.getElementById('register-text');
+    const registerLoading = document.getElementById('register-loading');
+    const errorMessages = document.getElementById('error-messages');
+    const successModal = document.getElementById('success-modal');
+    const goToLogin = document.getElementById('go-to-login');
+    const resendEmail = document.getElementById('resend-email');
+
+    // Form inputs
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const togglePassword = document.getElementById('toggle-password');
+    const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+    const termsCheckbox = document.getElementById('terms');
+
+    // Validation elements
+    const emailValidation = document.getElementById('email-validation');
+    const passwordMatch = document.getElementById('password-match');
+    const strengthBars = [
+        document.getElementById('strength-1'),
+        document.getElementById('strength-2'),
+        document.getElementById('strength-3'),
+        document.getElementById('strength-4')
+    ];
+    const strengthText = document.getElementById('strength-text');
+
+    // Password visibility toggles
+    togglePassword.addEventListener('click', () => {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        togglePassword.querySelector('i').className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+
+    toggleConfirmPassword.addEventListener('click', () => {
+        const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+        confirmPasswordInput.type = type;
+        toggleConfirmPassword.querySelector('i').className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+
+    // Email validation
+    emailInput.addEventListener('blur', () => {
+        const email = emailInput.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (email && !emailRegex.test(email)) {
+            showEmailValidation('Email formati noto\'g\'ri', 'error');
+        } else if (email) {
+            // Simulate email availability check
+            setTimeout(() => {
+                if (email === 'test@example.com') {
+                    showEmailValidation('Bu email allaqachon ro\'yxatdan o\'tgan', 'error');
+                } else {
+                    showEmailValidation('Email mavjud', 'success');
+                }
+            }, 500);
+        } else {
+            hideEmailValidation();
+        }
+    });
+
+    function showEmailValidation(message, type) {
+        emailValidation.textContent = message;
+        emailValidation.className = `mt-1 text-sm ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+        emailValidation.classList.remove('hidden');
+    }
+
+    function hideEmailValidation() {
+        emailValidation.classList.add('hidden');
+    }
+
+    // Password strength checker
+    passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        const strength = calculatePasswordStrength(password);
+        updatePasswordStrength(strength);
+        checkPasswordMatch();
+    });
+
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        
+        return Math.min(strength, 4);
+    }
+
+    function updatePasswordStrength(strength) {
+        const colors = ['bg-gray-200', 'bg-red-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
+        const texts = [
+            'Parol kuchini tekshiring',
+            'Juda zaif',
+            'Zaif',
+            'O\'rtacha',
+            'Kuchli'
+        ];
+
+        strengthBars.forEach((bar, index) => {
+            bar.className = `h-1 w-1/4 rounded ${index < strength ? colors[strength] : 'bg-gray-200'}`;
+        });
+
+        strengthText.textContent = texts[strength];
+        strengthText.className = `text-xs mt-1 ${strength === 0 ? 'text-gray-500' : strength < 3 ? 'text-red-600' : 'text-green-600'}`;
+    }
+
+    // Password match checker
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (confirmPassword && password !== confirmPassword) {
+            showPasswordMatch('Parollar mos kelmaydi', 'error');
+        } else if (confirmPassword && password === confirmPassword) {
+            showPasswordMatch('Parollar mos keldi', 'success');
+        } else {
+            hidePasswordMatch();
+        }
+    }
+
+    function showPasswordMatch(message, type) {
+        passwordMatch.textContent = message;
+        passwordMatch.className = `mt-1 text-sm ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+        passwordMatch.classList.remove('hidden');
+    }
+
+    function hidePasswordMatch() {
+        passwordMatch.classList.add('hidden');
+    }
+
+    // Form validation
+    function validateForm() {
+        const errors = [];
+        
+        // Required fields
+        const requiredFields = [
+            { field: document.getElementById('first_name'), name: 'Ism' },
+            { field: document.getElementById('last_name'), name: 'Familiya' },
+            { field: emailInput, name: 'Email' },
+            { field: passwordInput, name: 'Parol' },
+            { field: confirmPasswordInput, name: 'Parol tasdiqi' }
+        ];
+
+        requiredFields.forEach(({ field, name }) => {
+            if (!field.value.trim()) {
+                errors.push(`${name} maydoni to'ldirilishi shart`);
+            }
+        });
+
+        // Email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailInput.value && !emailRegex.test(emailInput.value)) {
+            errors.push('Email formati noto\'g\'ri');
+        }
+
+        // Password strength
+        if (passwordInput.value && calculatePasswordStrength(passwordInput.value) < 2) {
+            errors.push('Parol juda zaif. Kamida 8 ta belgi va turli xil belgilar ishlatilishi kerak');
+        }
+
+        // Password match
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            errors.push('Parollar mos kelmaydi');
+        }
+
+        // Terms acceptance
+        if (!termsCheckbox.checked) {
+            errors.push('Foydalanish shartlarini qabul qilishingiz kerak');
+        }
+
+        return errors;
+    }
+
+    function showErrors(errors) {
+        errorMessages.innerHTML = '';
+        errors.forEach(error => {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${error}`;
+            errorMessages.appendChild(errorDiv);
+        });
+        errorMessages.classList.remove('hidden');
+    }
+
+    function hideErrors() {
+        errorMessages.classList.add('hidden');
+    }
+
+    // Form submission
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const errors = validateForm();
+        
+        if (errors.length > 0) {
+            showErrors(errors);
+            return;
+        }
+
+        hideErrors();
+        
+        // Show loading state
+        registerText.classList.add('hidden');
+        registerLoading.classList.remove('hidden');
+        registerBtn.disabled = true;
+
+        try {
+            // Simulate registration API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Show success modal
+            successModal.classList.remove('hidden');
+            
+        } catch (error) {
+            showErrors(['Ro\'yxatdan o\'tishda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.']);
+        } finally {
+            // Reset button state
+            registerText.classList.remove('hidden');
+            registerLoading.classList.add('hidden');
+            registerBtn.disabled = false;
+        }
+    });
+
+    // Success modal actions
+    goToLogin.addEventListener('click', () => {
+        window.location.href = "{% url 'login' %}";
+    });
+
+    resendEmail.addEventListener('click', () => {
+        // Simulate resend email
+        resendEmail.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Yuborilmoqda...';
+        resendEmail.disabled = true;
+        
+        setTimeout(() => {
+            resendEmail.innerHTML = 'Email yuborildi!';
+            resendEmail.className = 'w-full bg-green-100 text-green-700 py-3 rounded-lg font-medium';
+            
+            setTimeout(() => {
+                resendEmail.innerHTML = 'Emailni qayta yuborish';
+                resendEmail.className = 'w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors';
+                resendEmail.disabled = false;
+            }, 3000);
+        }, 1500);
+    });
+
+    // Real-time form validation
+    const inputs = registerForm.querySelectorAll('input[required]');
+    inputs.forEach(input => {
+        input.addEventListener('blur', () => {
+            if (!input.value.trim()) {
+                input.classList.add('border-red-300');
+            } else {
+                input.classList.remove('border-red-300');
+                input.classList.add('border-green-300');
+            }
+        });
+
+        input.addEventListener('input', () => {
+            if (input.value.trim()) {
+                input.classList.remove('border-red-300');
+            }
+        });
+    });
+
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.startsWith('998')) {
+            value = value.substring(3);
+        }
+        if (value.length > 0) {
+            value = '+998 ' + value.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+        }
+        e.target.value = value;
+    });
+});
+</script>
+{% endblock %}

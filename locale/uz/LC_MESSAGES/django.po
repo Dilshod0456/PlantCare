@@ -1,0 +1,242 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-25 20:44+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: .\templates\base.html:7
+msgid "O'simlik Kasalliklari Tahlili"
+msgstr "O'simlik Kasalliklari Tahlili"
+
+#: .\templates\base.html:45 .\templates\base.html:97 .\templates\base.html:160
+msgid "Sinab ko'rish"
+msgstr "Sinab ko'rish"
+
+#: .\templates\base.html:48 .\templates\base.html:100 .\templates\base.html:161
+msgid "Yordam"
+msgstr "Yordam"
+
+#: .\templates\base.html:52 .\templates\base.html:104
+msgid "Tarix"
+msgstr "Tarix"
+
+#: .\templates\base.html:55 .\templates\base.html:107
+msgid "Profil"
+msgstr "Profil"
+
+#: .\templates\base.html:58 .\templates\base.html:109
+msgid "Chiqish"
+msgstr "Chiqish"
+
+#: .\templates\base.html:61 .\templates\base.html:111
+msgid "Kirish"
+msgstr "Kirish"
+
+#: .\templates\base.html:63 .\templates\base.html:112
+msgid "Ro'yxatdan o'tish"
+msgstr "Ro'yxatdan o'tish"
+
+#: .\templates\base.html:137
+msgid ""
+"Sun'iy intellekt yordamida o'simlik kasalliklarini aniqlash va davolash "
+"bo'yicha tavsiyalar beruvchi platforma."
+msgstr ""
+"Sun'iy intellekt yordamida o'simlik kasalliklarini aniqlash va davolash "
+"bo'yicha tavsiyalar beruvchi platforma."
+
+#: .\templates\base.html:157
+msgid "Tezkor havolalar"
+msgstr "Tezkor havolalar"
+
+#: .\templates\base.html:159
+msgid "Bosh sahifa"
+msgstr "Bosh sahifa"
+
+#: .\templates\base.html:162
+msgid "Maxfiylik siyosati"
+msgstr "Maxfiylik siyosati"
+
+#: .\templates\base.html:168
+msgid "Aloqa"
+msgstr "Aloqa"
+
+#: .\templates\base.html:188
+msgid "© 2024 PlantCare AI. Barcha huquqlar himoyalangan."
+msgstr "© 2024 PlantCare AI. Barcha huquqlar himoyalangan."
+
+#: .\templates\core\home.html:4
+msgid "PlantCare AI - O'simlik Kasalliklari Tahlili"
+msgstr ""
+
+#: .\templates\core\home.html:13
+msgid "O'simlik kasalliklarini"
+msgstr ""
+
+#: .\templates\core\home.html:14
+msgid "yordamida aniqlang"
+msgstr ""
+
+#: .\templates\core\home.html:17
+msgid ""
+"Faqat rasm yuklash orqali o'simlik kasalliklarini aniqlab, professional "
+"tavsiyalar oling. Tez, aniq va ishonchli natijalar."
+msgstr ""
+
+#: .\templates\core\home.html:22
+msgid "Hoziroq sinab ko'ring"
+msgstr ""
+
+#: .\templates\core\home.html:26 .\templates\core\home.html:102
+msgid "Qanday ishlaydi?"
+msgstr ""
+
+#: .\templates\core\home.html:53
+msgid "Nima uchun PlantCare AI?"
+msgstr ""
+
+#: .\templates\core\home.html:56
+msgid ""
+"Zamonaviy sun'iy intellekt texnologiyalari yordamida o'simlik kasalliklarini "
+"aniqlab, samarali davolash usullarini taklif qilamiz."
+msgstr ""
+
+#: .\templates\core\home.html:66
+msgid "AI yordamida tahlil"
+msgstr ""
+
+#: .\templates\core\home.html:68
+msgid ""
+"Ilg'or mashina o'rganish algoritmlari yordamida yuqori aniqlikda "
+"kasalliklarni aniqlash va tahlil qilish."
+msgstr ""
+
+#: .\templates\core\home.html:77
+msgid "Tezkor javob"
+msgstr ""
+
+#: .\templates\core\home.html:79
+msgid ""
+"Bir necha soniya ichida natija oling. Vaqtingizni tejang va tezkor qaror "
+"qabul qiling."
+msgstr ""
+
+#: .\templates\core\home.html:88
+msgid "Monitoring"
+msgstr ""
+
+#: .\templates\core\home.html:90
+msgid ""
+"Tahlillar tarixini kuzatib boring va o'simliklaringizning sog'ligi "
+"dinamikasini nazorat qiling."
+msgstr ""
+
+#: .\templates\core\home.html:105
+msgid "Faqat 3 ta oddiy qadam bilan o'simlik kasalliklarini aniqlang"
+msgstr ""
+
+#: .\templates\core\home.html:120
+msgid "Rasm yuklash"
+msgstr ""
+
+#: .\templates\core\home.html:122
+msgid ""
+"Kasallangan o'simlikning rasmini yuklang yoki kameradan suratga oling. JPG, "
+"PNG formatlarini qo'llab-quvvatlaymiz."
+msgstr ""
+
+#: .\templates\core\home.html:136
+msgid "Kasallik aniqlash"
+msgstr ""
+
+#: .\templates\core\home.html:138
+msgid ""
+"AI tizimimiz rasmni tahlil qilib, kasallik turini va aniqlik darajasini "
+"aniqlaydi."
+msgstr ""
+
+#: .\templates\core\home.html:152
+msgid "Tavsiyalar olish"
+msgstr ""
+
+#: .\templates\core\home.html:154
+msgid ""
+"Kasallikni davolash bo'yicha batafsil tavsiyalar va oldini olish usullarini "
+"oling."
+msgstr ""
+
+#: .\templates\core\home.html:174
+msgid "Aniqlik darajasi"
+msgstr ""
+
+#: .\templates\core\home.html:178
+msgid "Kasallik turi"
+msgstr ""
+
+#: .\templates\core\home.html:182
+msgid "Tahlil qilingan"
+msgstr ""
+
+#: .\templates\core\home.html:186
+msgid "Xizmat"
+msgstr ""
+
+#: .\templates\core\home.html:196
+msgid "O'simliklaringizni sog'lom saqlang!"
+msgstr ""
+
+#: .\templates\core\home.html:199
+msgid ""
+"Bugun PlantCare AI bilan tanishing va o'simlik kasalliklarini erta bosqichda "
+"aniqlashni boshlang."
+msgstr ""
+
+#: .\templates\core\home.html:204
+msgid "Bepul sinab ko'ring"
+msgstr ""
+
+#: .\templates\core\home.html:208
+msgid "Ro'yxatdan o'ting"
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:4
+msgid "AI Chat"
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:13
+msgid "AI Yordamchi"
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:16
+msgid "O'simlik kasalliklari bo'yicha savollaringizni bering"
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:30
+msgid ""
+"Salom! Men o'simlik kasalliklari bo'yicha AI yordamchiman. Savolingizni "
+"bering."
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:46
+msgid "Savolingizni yozing..."
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:56 .\templates\diagnosis\chat.html:171
+msgid "Yuborish"
+msgstr ""
+
+#: .\templates\diagnosis\chat.html:136
+msgid "Yuborilmoqda..."
+msgstr ""

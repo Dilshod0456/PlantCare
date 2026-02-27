@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}Kirish - PlantCare AI{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="w-16 h-16 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-leaf text-white text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Hisobingizga kiring</h2>
+            <p class="text-gray-600">PlantCare AI platformasiga xush kelibsiz</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <form id="login-form" method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email manzil
+                    </label>
+                    <div class="relative">
+                        <input type="email" id="email" name="email" required 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                               placeholder="example@email.com">
+                        <i class="fas fa-envelope absolute left-3 top-4 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Parol
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-eco-green focus:border-eco-green"
+                               placeholder="Parolingizni kiriting">
+                        <i class="fas fa-lock absolute left-3 top-4 text-gray-400"></i>
+                        <button type="button" id="toggle-password" class="absolute right-3 top-4 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="remember" class="text-eco-green focus:ring-eco-green border-gray-300 rounded">
+                        <span class="ml-2 text-sm text-gray-600">Meni eslab qol</span>
+                    </label>
+                    <button type="button" id="forgot-password" class="text-sm text-eco-green hover:text-eco-dark-green font-medium">
+                        Parolni unutdingizmi?
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="error-text"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="login-btn" 
+                        class="w-full bg-eco-green text-white py-3 rounded-lg font-semibold hover:bg-eco-dark-green transition-colors focus:outline-none focus:ring-2 focus:ring-eco-green focus:ring-offset-2">
+                    <span id="login-text">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Kirish
+                    </span>
+                    <span id="login-loading" class="hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Kirilyapti...
+                    </span>
+                </button>
+
+                <!-- Divider -->
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">yoki</span>
+                    </div>
+                </div>
+
+                <!-- Social Login -->
+                <button type="button" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
+                    <i class="fab fa-google text-red-500 mr-2"></i>
+                    Google orqali kirish
+                </button>
+            </form>
+
+            <!-- Register Link -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    Hisobingiz yo'qmi? 
+                    <a href="{% url 'users:register' %}" class="text-eco-green hover:text-eco-dark-green font-medium">
+                        Ro'yxatdan o'ting
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Demo Account -->
+        <div class="bg-eco-light-green rounded-lg p-4 text-center">
+            <p class="text-eco-dark-green text-sm mb-2">
+                <i class="fas fa-info-circle mr-1"></i>
+                Demo hisobni sinab ko'ring
+            </p>
+            <div class="text-xs text-eco-dark-green">
+                Email: demo@plantcare.uz | Parol: demo123
+            </div>
+            <button type="button" id="demo-login" class="text-xs text-blue-600 hover:underline mt-2">Avtomatik kirish</button>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgot-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-eco-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-key text-eco-green text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Parolni tiklash</h3>
+            <p class="text-gray-600">Email manzilingizni kiriting, sizga parolni tiklash havolasi yuboramiz</p>
+        </div>
+
+        <form id="forgot-form">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email manzil</label>
+                <input type="email" id="forgot-email" required 
+                       class="w-full border border-gray-300 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-eco-green"
+                       placeholder="example@email.com" name="email">
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="submit" class="flex-1 bg-eco-green text-white py-3 rounded-lg font-semibold hover:bg-eco-dark-green transition-colors">
+                    Yuborish
+                </button>
+                <button type="button" id="close-forgot" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                    Bekor qilish
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const loginForm = document.getElementById('login-form');
+    const loginBtn = document.getElementById('login-btn');
+    const loginText = document.getElementById('login-text');
+    const loginLoading = document.getElementById('login-loading');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password');
+    const forgotPassword = document.getElementById('forgot-password');
+    const forgotModal = document.getElementById('forgot-modal');
+    const closeForgot = document.getElementById('close-forgot');
+    const forgotForm = document.getElementById('forgot-form');
+    const demoLogin = document.getElementById('demo-login');
+
+    // CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function () {
+        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        togglePassword.innerHTML = passwordInput.type === 'text'
+            ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    });
+
+    // Show forgot password modal
+    forgotPassword.addEventListener('click', () => forgotModal.classList.remove('hidden'));
+    closeForgot.addEventListener('click', () => forgotModal.classList.add('hidden'));
+
+    // Forgot password submission
+    forgotForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = document.getElementById('forgot-email').value;
+        if (!email) return alert('Iltimos, email manzilini kiriting');
+        try {
+            const res = await fetch('/users/forgot-password/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({ email })
+            });
+            const data = await res.json();
+            alert(data.success ? 'Havola yuborildi!' : (data.error || 'Xatolik yuz berdi.'));
+            if (data.success) forgotModal.classList.add('hidden');
+        } catch (err) {
+            console.error(err);
+            alert('Tarmoq xatosi. Keyinroq urinib ko‘ring.');
+        }
+    });
+
+    // Login form submission
+    loginForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        loginBtn.disabled = true;
+        loginText.classList.add('hidden');
+        loginLoading.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
+
+        const formData = new FormData(loginForm);
+        try {
+            const res = await fetch('/users/login/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = data.redirect_url || '/';
+            } else {
+                errorText.textContent = data.error || 'Kirishda xatolik yuz berdi.';
+                errorMessage.classList.remove('hidden');
+            }
+        } catch (err) {
+            console.error(err);
+            errorText.textContent = 'Tarmoq xatosi.';
+            errorMessage.classList.remove('hidden');
+        } finally {
+            loginBtn.disabled = false;
+            loginText.classList.remove('hidden');
+            loginLoading.classList.add('hidden');
+        }
+    });
+
+    // Demo login handler
+    demoLogin?.addEventListener('click', () => {
+        document.getElementById('email').value = 'demo@plantcare.uz';
+        document.getElementById('password').value = 'demo123';
+        loginForm.requestSubmit();
+    });
+});
+</script>
+{% endblock %}

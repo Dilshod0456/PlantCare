@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PlantCare AI - O'simlik Kasalliklari Tahlili{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-eco-light-green to-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+                    O'simlik kasalliklarini 
+                    <span class="text-eco-green">AI</span> yordamida aniqlang
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Faqat rasm yuklash orqali o'simlik kasalliklarini aniqlab, professional tavsiyalar oling. Tez, aniq va ishonchli natijalar.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{% url 'diagnosis:test_image' %}" class="bg-eco-green text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-eco-dark-green transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-camera mr-2"></i>
+                        Hoziroq sinab ko'ring
+                    </a>
+                    <a href="#how-it-works" class="border-2 border-eco-green text-eco-green px-8 py-4 rounded-lg text-lg font-semibold hover:bg-eco-green hover:text-white transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-play mr-2"></i>
+                        Qanday ishlaydi?
+                    </a>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="flex bg-white rounded-2xl shadow-2xl p-4 justify-center">
+                    <img class="justify-center" src="{% static 'header.svg' %}" alt="">
+                </div>
+                <!-- Floating elements -->
+                <div class="absolute -top-4 -right-4 bg-eco-green text-white p-3 rounded-full shadow-lg">
+                    <i class="fas fa-leaf text-xl"></i>
+                </div>
+                <div class="absolute -bottom-4 -left-4 bg-white p-3 rounded-full shadow-lg">
+                    <i class="fas fa-microscope text-eco-green text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Nima uchun PlantCare AI?
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Zamonaviy sun'iy intellekt texnologiyalari yordamida o'simlik kasalliklarini aniqlab, samarali davolash usullarini taklif qilamiz.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-eco-light-green rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                <div class="w-16 h-16 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-brain text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">AI yordamida tahlil</h3>
+                <p class="text-gray-600">
+                    Ilg'or mashina o'rganish algoritmlari yordamida yuqori aniqlikda kasalliklarni aniqlash va tahlil qilish.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-eco-light-green rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                <div class="w-16 h-16 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-bolt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Tezkor javob</h3>
+                <p class="text-gray-600">
+                    Bir necha soniya ichida natija oling. Vaqtingizni tejang va tezkor qaror qabul qiling.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-eco-light-green rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                <div class="w-16 h-16 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Monitoring</h3>
+                <p class="text-gray-600">
+                    Tahlillar tarixini kuzatib boring va o'simliklaringizning sog'ligi dinamikasini nazorat qiling.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-20 bg-eco-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Qanday ishlaydi?
+            </h2>
+            <p class="text-xl text-gray-600">
+                Faqat 3 ta oddiy qadam bilan o'simlik kasalliklarini aniqlang
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="text-center">
+                <div class="relative mb-8">
+                    <div class="w-24 h-24 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-upload text-white text-3xl"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-eco-dark-green rounded-full flex items-center justify-center text-white font-bold">
+                        1
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Rasm yuklash</h3>
+                <p class="text-gray-600">
+                    Kasallangan o'simlikning rasmini yuklang yoki kameradan suratga oling. JPG, PNG formatlarini qo'llab-quvvatlaymiz.
+                </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="text-center">
+                <div class="relative mb-8">
+                    <div class="w-24 h-24 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-white text-3xl"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-eco-dark-green rounded-full flex items-center justify-center text-white font-bold">
+                        2
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Kasallik aniqlash</h3>
+                <p class="text-gray-600">
+                    AI tizimimiz rasmni tahlil qilib, kasallik turini va aniqlik darajasini aniqlaydi.
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center">
+                <div class="relative mb-8">
+                    <div class="w-24 h-24 bg-eco-green rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clipboard-list text-white text-3xl"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-eco-dark-green rounded-full flex items-center justify-center text-white font-bold">
+                        3
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Tavsiyalar olish</h3>
+                <p class="text-gray-600">
+                    Kasallikni davolash bo'yicha batafsil tavsiyalar va oldini olish usullarini oling.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="{% url 'diagnosis:test_image' %}" class="bg-eco-green text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-eco-dark-green transition-colors inline-flex items-center">
+                <i class="fas fa-rocket mr-2"></i>
+                Hoziroq boshlang
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-4xl font-bold text-eco-green mb-2">95%</div>
+                <div class="text-gray-600">Aniqlik darajasi</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-eco-green mb-2">50+</div>
+                <div class="text-gray-600">Kasallik turi</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-eco-green mb-2">10K+</div>
+                <div class="text-gray-600">Tahlil qilingan</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-eco-green mb-2">24/7</div>
+                <div class="text-gray-600">Xizmat</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-eco-green">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6">
+            O'simliklaringizni sog'lom saqlang!
+        </h2>
+        <p class="text-xl text-green-100 mb-8">
+            Bugun PlantCare AI bilan tanishing va o'simlik kasalliklarini erta bosqichda aniqlashni boshlang.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'diagnosis:test_image' %}" class="bg-white text-eco-green px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center justify-center">
+                <i class="fas fa-camera mr-2"></i>
+                Bepul sinab ko'ring
+            </a>
+            <a href="{% url 'users:register' %}" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-eco-green transition-colors inline-flex items-center justify-center">
+                <i class="fas fa-user-plus mr-2"></i>
+                Ro'yxatdan o'ting
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

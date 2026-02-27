@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+
+{% block title %}Yordam - PlantCare AI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            Yordam markazi
+        </h1>
+        <p class="text-xl text-gray-600">
+            PlantCare AI haqida eng ko'p beriladigan savollar va javoblar
+        </p>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-12">
+        <div class="relative max-w-2xl mx-auto">
+            <input type="text" id="help-search" placeholder="Savolingizni yozing..." class="w-full border border-gray-300 rounded-lg px-4 py-3 pl-12 text-lg focus:outline-none focus:ring-2 focus:ring-eco-green">
+            <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
+        </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-lg shadow-sm p-6 text-center hover:shadow-md transition-shadow cursor-pointer" data-category="general">
+            <div class="w-16 h-16 bg-eco-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-info-circle text-eco-green text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Umumiy savollar</h3>
+            <p class="text-gray-600">Platforma haqida asosiy ma'lumotlar</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6 text-center hover:shadow-md transition-shadow cursor-pointer" data-category="usage">
+            <div class="w-16 h-16 bg-eco-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-camera text-eco-green text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Foydalanish</h3>
+            <p class="text-gray-600">Rasm yuklash va tahlil qilish</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6 text-center hover:shadow-md transition-shadow cursor-pointer" data-category="technical">
+            <div class="w-16 h-16 bg-eco-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-cog text-eco-green text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Texnik yordam</h3>
+            <p class="text-gray-600">Muammolar va yechimlar</p>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <!-- General Questions -->
+        <div class="faq-section" data-category="general">
+            <div class="border-b border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-info-circle text-eco-green mr-2"></i>
+                    Umumiy savollar
+                </h2>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">PlantCare AI nima?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <p class="text-gray-600">
+                        PlantCare AI - bu sun'iy intellekt texnologiyalari yordamida o'simlik kasalliklarini 
+                        aniqlash va davolash bo'yicha tavsiyalar beruvchi platforma. Siz faqat kasallangan 
+                        o'simlikning rasmini yuklasangiz, tizim kasallik turini aniqlab, uni davolash 
+                        bo'yicha batafsil ma'lumot beradi.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Xizmat bepulmi?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <p class="text-gray-600">
+                        Ha, PlantCare AI asosiy xizmatlarini bepul taqdim etadi. Ro'yxatdan o'tmagan 
+                        foydalanuvchilar ham tizimni sinab ko'rishlari mumkin. Ro'yxatdan o'tgan 
+                        foydalanuvchilar esa qo'shimcha imkoniyatlardan foydalanishlari mumkin, 
+                        masalan, tahlillar tarixini saqlash va PDF/Excel formatida yuklab olish.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Qanday o'simliklar uchun ishlaydi?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <p class="text-gray-600">
+                        Hozirda tizim asosan pomidor, kartoshka, bodring va boshqa paslenovlar 
+                        oilasiga mansub o'simliklar uchun optimallashtirilgan. Biroq, ko'plab 
+                        boshqa o'simlik turlarini ham taniy oladi. Tizim doimiy ravishda yangilanib 
+                        boradi va yangi o'simlik turlari qo'shiladi.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Questions -->
+        <div class="faq-section" data-category="usage">
+            <div class="border-b border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-camera text-eco-green mr-2"></i>
+                    Foydalanish bo'yicha savollar
+                </h2>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Qanday rasm yuklash mumkin?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <div class="text-gray-600">
+                        <p class="mb-3">Rasm yuklash uchun quyidagi talablarga rioya qiling:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Format: JPG, JPEG yoki PNG</li>
+                            <li>Maksimal hajm: 10MB</li>
+                            <li>Rasm aniq va yorqin bo'lishi kerak</li>
+                            <li>Kasallangan qism yaxshi ko'rinishi kerak</li>
+                            <li>Bir nechta barglar ko'rinishi tavsiya etiladi</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Natijani qanday tushunish kerak?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <div class="text-gray-600">
+                        <p class="mb-3">Tahlil natijasi quyidagi ma'lumotlarni o'z ichiga oladi:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Kasallik nomi:</strong> Aniqlangan kasallikning nomi</li>
+                            <li><strong>Aniqlik darajasi:</strong> Natijaning ishonchlilik foizi (60% dan yuqori yaxshi hisoblanadi)</li>
+                            <li><strong>Tavsif:</strong> Kasallik haqida qisqacha ma'lumot</li>
+                            <li><strong>AI tavsiyalari:</strong> Davolash va oldini olish usullari</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">AI tavsiyasi qanday yaratiladi?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <p class="text-gray-600">
+                        AI tavsiyalari minglab o'simlik kasalliklari ma'lumotlari va davolash 
+                        usullari asosida yaratiladi. Tizim kasallik turini aniqlagandan so'ng, 
+                        eng samarali davolash usullarini, zarur dorilarni va oldini olish 
+                        choralarini tavsiya qiladi. Biroq, jiddiy hollarda mutaxassis 
+                        agronomga murojaat qilish tavsiya etiladi.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Questions -->
+        <div class="faq-section" data-category="technical">
+            <div class="border-b border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-cog text-eco-green mr-2"></i>
+                    Texnik yordam
+                </h2>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Rasm yuklanmayapti, nima qilish kerak?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <div class="text-gray-600">
+                        <p class="mb-3">Agar rasm yuklanmasa, quyidagilarni tekshiring:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Internet aloqangiz barqaror ekanligini tekshiring</li>
+                            <li>Fayl hajmi 10MB dan oshmasligini tekshiring</li>
+                            <li>Fayl formati JPG, JPEG yoki PNG ekanligini tekshiring</li>
+                            <li>Brauzeringizni yangilang yoki boshqa brauzer ishlatib ko'ring</li>
+                            <li>Sahifani yangilab, qayta urinib ko'ring</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item border-b border-gray-200">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Tahlil juda uzoq davom etmoqda</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <p class="text-gray-600">
+                        Odatda tahlil 10-30 soniya davom etadi. Agar uzoqroq davom etsa, 
+                        internet aloqangizni tekshiring yoki sahifani yangilab qayta urinib ko'ring. 
+                        Server yuklanganligi sababli ba'zan biroz ko'proq vaqt ketishi mumkin.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Mobil qurilmada ishlatish mumkinmi?</h3>
+                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                    </div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <p class="text-gray-600">
+                        Ha, PlantCare AI barcha qurilmalarda - kompyuter, planshet va 
+                        smartfonlarda to'liq ishlaydi. Mobil qurilmalarda kamera orqali 
+                        to'g'ridan-to'g'ri rasm olish ham mumkin. Sayt responsiv dizaynga 
+                        ega va har qanday ekran o'lchamiga moslashadi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Section -->
+    <div class="bg-white rounded-lg shadow-sm mt-8 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-shield-alt text-eco-green mr-2"></i>
+            Maxfiylik siyosati
+        </h2>
+        <div class="prose text-gray-600">
+            <p class="mb-4">
+                PlantCare AI foydalanuvchilarning maxfiyligini himoya qilishni muhim deb biladi. 
+                Biz sizning shaxsiy ma'lumotlaringizni qanday to'playmiz, ishlatamiz va himoya qilamiz:
+            </p>
+            
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Ma'lumotlar to'plash</h3>
+            <ul class="list-disc list-inside mb-4 space-y-1">
+                <li>Yuklangan rasmlar faqat tahlil maqsadida ishlatiladi</li>
+                <li>Ro'yxatdan o'tish uchun email va ism talab qilinadi</li>
+                <li>Tahlil natijalari faqat sizning hisobingizda saqlanadi</li>
+            </ul>
+
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Ma'lumotlardan foydalanish</h3>
+            <ul class="list-disc list-inside mb-4 space-y-1">
+                <li>Rasmlar AI tahlili uchun ishlatiladi va keyin o'chiriladi</li>
+                <li>Shaxsiy ma'lumotlar uchinchi shaxslarga berilmaydi</li>
+                <li>Statistik ma'lumotlar anonim holda ishlatilishi mumkin</li>
+            </ul>
+
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Xavfsizlik</h3>
+            <p class="mb-4">
+                Barcha ma'lumotlar shifrlangan holda saqlanadi va zamonaviy xavfsizlik 
+                protokollari bilan himoyalanadi. Sizning hisobingizga faqat siz kirish huquqiga egasiz.
+            </p>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="bg-eco-green rounded-lg p-8 mt-8 text-center">
+        <h2 class="text-2xl font-bold text-white mb-4">
+            Savolingizga javob topa olmadingizmi?
+        </h2>
+        <p class="text-green-100 mb-6">
+            Bizning yordam xizmati bilan bog'laning, sizga yordam berishdan mamnun bo'lamiz!
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button id="chat-support" class="bg-white text-eco-green px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                <i class="fas fa-comments mr-2"></i>
+                Chat orqali yozish
+            </button>
+            <a href="mailto:support@plantcare.uz" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-eco-green transition-colors">
+                <i class="fas fa-envelope mr-2"></i>
+                Email yuborish
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Support Modal -->
+<div id="chat-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg max-w-md w-full mx-4 max-h-96 flex flex-col">
+        <div class="flex items-center justify-between p-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-headset text-eco-green mr-2"></i>
+                Yordam xizmati
+            </h3>
+            <button id="close-chat" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flex-1 p-4 overflow-y-auto">
+            <div class="space-y-3">
+                <div class="bg-gray-100 rounded-lg p-3">
+                    <p class="text-sm text-gray-700">
+                        Salom! PlantCare AI yordam xizmatiga xush kelibsiz. 
+                        Sizga qanday yordam bera olaman?
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 border-t">
+            <div class="flex space-x-2">
+                <input type="text" placeholder="Xabaringizni yozing..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eco-green">
+                <button class="bg-eco-green text-white px-4 py-2 rounded-lg hover:bg-eco-dark-green transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    const categoryCards = document.querySelectorAll('[data-category]');
+    const faqSections = document.querySelectorAll('.faq-section');
+    const helpSearch = document.getElementById('help-search');
+    const chatSupport = document.getElementById('chat-support');
+    const chatModal = document.getElementById('chat-modal');
+    const closeChat = document.getElementById('close-chat');
+
+    // FAQ accordion functionality
+    faqItems.forEach(item => {
+        const button = item.querySelector('button');
+        const answer = item.querySelector('.faq-answer');
+        const icon = button.querySelector('i:last-child');
+
+        button.addEventListener('click', () => {
+            const isOpen = !answer.classList.contains('hidden');
+            
+            // Close all other items
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.querySelector('.faq-answer').classList.add('hidden');
+                    otherItem.querySelector('button i:last-child').classList.remove('rotate-180');
+                }
+            });
+
+            // Toggle current item
+            if (isOpen) {
+                answer.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            } else {
+                answer.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+        });
+    });
+
+    // Category filtering
+    categoryCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const category = card.dataset.category;
+            
+            faqSections.forEach(section => {
+                if (section.dataset.category === category) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    });
+
+    // Search functionality
+    helpSearch.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('h3').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = searchTerm ? 'none' : 'block';
+            }
+        });
+    });
+
+    // Chat support modal
+    chatSupport.addEventListener('click', () => {
+        chatModal.classList.remove('hidden');
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatModal.classList.add('hidden');
+    });
+
+    // Close modal when clicking outside
+    chatModal.addEventListener('click', (e) => {
+        if (e.target === chatModal) {
+            chatModal.classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endblock %}

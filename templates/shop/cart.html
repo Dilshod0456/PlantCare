@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Savat - O'simlik Do'koni{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-10">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="h-12 w-12 rounded-xl bg-eco-light-green flex items-center justify-center text-eco-dark-green text-xl"><i class="fas fa-shopping-cart"></i></div>
+        <div>
+            <p class="text-sm text-eco-dark-gray font-semibold uppercase tracking-wide">Savat</p>
+            <h1 class="text-3xl font-bold text-gray-900">Tanlangan mahsulotlar</h1>
+        </div>
+    </div>
+
+    {% if cart.items.all %}
+    <div class="grid gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div class="hidden md:grid grid-cols-5 bg-eco-gray text-sm font-semibold text-gray-700 px-6 py-3">
+                <span class="col-span-2">Mahsulot</span>
+                <span>Narx</span>
+                <span>Miqdor</span>
+                <span>Jami</span>
+            </div>
+            <div class="divide-y divide-gray-100">
+                {% for item in cart.items.all %}
+                <div class="grid md:grid-cols-5 items-center px-4 md:px-6 py-4 gap-4">
+                    <div class="md:col-span-2 flex items-center gap-4">
+                        {% if item.product.main_image %}
+                        <div class="h-16 w-16 rounded-lg bg-eco-gray overflow-hidden">
+                            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="h-full w-full object-cover">
+                        </div>
+                        {% elif item.product.image_2 %}
+                        <div class="h-16 w-16 rounded-lg bg-eco-gray overflow-hidden">
+                            <img src="{{ item.product.image_2.url }}" alt="{{ item.product.name }}" class="h-full w-full object-cover">
+                        </div>
+                        {% elif item.product.image_3 %}
+                        <div class="h-16 w-16 rounded-lg bg-eco-gray overflow-hidden">
+                            <img src="{{ item.product.image_3.url }}" alt="{{ item.product.name }}" class="h-full w-full object-cover">
+                        </div>
+                        {% elif item.product.image_4 %}
+                        <div class="h-16 w-16 rounded-lg bg-eco-gray overflow-hidden">
+                            <img src="{{ item.product.image_4.url }}" alt="{{ item.product.name }}" class="h-full w-full object-cover">
+                        </div>
+                        {% else %}
+                        <div class="h-16 w-16 rounded-lg bg-eco-gray flex items-center justify-center text-eco-dark-gray">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">{{ item.product.name }}</p>
+                            <p class="text-xs text-eco-dark-gray">{{ item.product.category.name }}</p>
+                        </div>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-800">{{ item.product.price|floatformat:0 }} so'm</div>
+                    <div class="flex items-center gap-2">
+                        <button class="h-9 w-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50" onclick="updateQuantity({{ item.id }}, {{ item.quantity }} - 1)"><i class="fas fa-minus"></i></button>
+                        <input type="number" class="w-12 text-center border border-gray-200 rounded-lg h-9" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" readonly>
+                        <button class="h-9 w-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50" onclick="updateQuantity({{ item.id }}, {{ item.quantity }} + 1)"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="flex items-center justify-between md:justify-start gap-3">
+                        <p class="text-sm font-bold text-eco-dark-green">{{ item.subtotal|floatformat:0 }} so'm</p>
+                        <button class="h-9 w-9 rounded-lg border border-gray-200 text-rose-500 flex items-center justify-center hover:bg-rose-50" onclick="removeItem({{ item.id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex items-center justify-between px-4 md:px-6 py-4 bg-eco-gray">
+                <a href="{% url 'shop:product_list' %}" class="inline-flex items-center gap-2 text-eco-dark-green font-semibold">
+                    <i class="fas fa-arrow-left"></i> Xaridni davom ettirish
+                </a>
+                <button class="inline-flex items-center gap-2 text-rose-600 font-semibold" onclick="clearCart()">
+                    <i class="fas fa-trash"></i> Savatni tozalash
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 h-fit">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Buyurtma haqida</h3>
+            <div class="space-y-3 text-sm text-gray-700">
+                <div class="flex items-center justify-between">
+                    <span>Mahsulotlar</span>
+                    <span class="font-semibold">{{ cart.total_price|floatformat:0 }} so'm</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Yetkazib berish</span>
+                    <span class="font-semibold">{{ delivery_fee|floatformat:0 }} so'm</span>
+                </div>
+                <div class="border-t border-gray-100 pt-3 flex items-center justify-between text-base font-bold text-gray-900">
+                    <span>Jami</span>
+                    <span class="text-eco-dark-green">{{ cart.total_price|add:delivery_fee|floatformat:0 }} so'm</span>
+                </div>
+            </div>
+            <a href="{% url 'shop:checkout' %}" class="mt-5 w-full inline-flex justify-center items-center px-4 py-3 rounded-xl bg-eco-green text-white font-semibold hover:bg-eco-dark-green transition">
+                <i class="fas fa-check mr-2"></i> Buyurtma berish
+            </a>
+            <p class="mt-3 text-center text-xs text-eco-dark-gray flex items-center justify-center gap-2"><i class="fas fa-shield-alt"></i> Xavfsiz to'lov</p>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-10 text-center">
+        <div class="h-16 w-16 mx-auto rounded-full bg-eco-light-green flex items-center justify-center text-3xl text-eco-dark-green mb-4">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900">Savatingiz bo'sh</h3>
+        <p class="text-sm text-gray-600 mt-2">Savatingizga mahsulot qo'shing va buyurtma bering</p>
+        <a href="{% url 'shop:product_list' %}" class="mt-4 inline-flex items-center px-5 py-3 rounded-xl bg-eco-green text-white font-semibold hover:bg-eco-dark-green transition">
+            <i class="fas fa-leaf mr-2"></i> Mahsulotlarni ko'rish
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+const cartApiBase = "{% url 'shop:home' %}api/cart/";
+
+function updateQuantity(itemId, newQuantity) {
+    if (newQuantity < 1) return;
+    fetch(cartApiBase + 'update_item/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ item_id: itemId, quantity: newQuantity })
+    }).then(() => location.reload());
+}
+
+function removeItem(itemId) {
+    if (!confirm('Mahsulotni savatdan o\'chirmoqchimisiz?')) return;
+    fetch(cartApiBase + 'remove_item/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ item_id: itemId })
+    }).then(() => location.reload());
+}
+
+function clearCart() {
+    if (!confirm('Savatni butunlay tozalamoqchimisiz?')) return;
+    fetch(cartApiBase + 'clear/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    }).then(() => location.reload());
+}
+</script>
+{% endblock %}

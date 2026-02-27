@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ disease.name }} - PlantCare AI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Breadcrumb -->
+    <nav class="mb-8 text-sm">
+        <a href="{% url 'diagnosis:disease_list' %}" class="text-eco-green hover:text-eco-dark-green">
+            <i class="fas fa-arrow-left mr-2"></i>Ortga qaytish
+        </a>
+    </nav>
+
+    <!-- Disease Header -->
+    <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    {{ disease.name }}
+                </h1>
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <span>
+                        <i class="fas fa-chart-line text-eco-green mr-1"></i>
+                        {{ total_detections }} ta aniqlangan
+                    </span>
+                    <span>
+                        <i class="fas fa-percentage text-eco-green mr-1"></i>
+                        {{ avg_confidence }}% o'rtacha aniqlik
+                    </span>
+                    {% if disease.region %}
+                    <span>
+                        <i class="fas fa-map-marker-alt text-eco-green mr-1"></i>
+                        {{ disease.get_region_display }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">
+                <i class="fas fa-info-circle text-eco-green mr-2"></i>
+                Tavsif
+            </h2>
+            <p class="text-gray-700 leading-relaxed">
+                {{ disease.description }}
+            </p>
+        </div>
+
+        <!-- Symptoms -->
+        {% if disease.symptoms %}
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                Alomatlar
+            </h2>
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <p class="text-gray-700 whitespace-pre-line">{{ disease.symptoms }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Causes -->
+        {% if disease.causes %}
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">
+                <i class="fas fa-search text-eco-green mr-2"></i>
+                Sabablar
+            </h2>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                <p class="text-gray-700 whitespace-pre-line">{{ disease.causes }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Prevention -->
+        {% if disease.prevention %}
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">
+                <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                Oldini olish
+            </h2>
+            <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                <p class="text-gray-700 whitespace-pre-line">{{ disease.prevention }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Treatment -->
+        {% if disease.treatment %}
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">
+                <i class="fas fa-medkit text-red-500 mr-2"></i>
+                Davolash usullari
+            </h2>
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded">
+                <p class="text-gray-700 whitespace-pre-line">{{ disease.treatment }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Related Images -->
+    {% if related_images %}
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">
+            <i class="fas fa-images text-eco-green mr-2"></i>
+            Aniqlangan rasmlar
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {% for image in related_images %}
+            <div class="relative group">
+                <img src="{{ image.image.url }}" alt="{{ disease.name }}" class="w-full h-32 object-cover rounded-lg">
+                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                    <span class="text-white text-sm font-medium">
+                        {{ image.accuracy|floatformat:0 }}%
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

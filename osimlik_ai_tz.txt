@@ -1,0 +1,92 @@
+
+Texnik topshiriq (Technical Specification)
+Loyiha nomi: PlantCare
+
+1. Loyiha maqsadi
+O‘simliklarning rasmini yuklash orqali kasalliklarni aniqlash va sun’iy intellekt asosida kasallikni davolash, oldini olish bo‘yicha tavsiyalar beradigan web-platforma ishlab chiqish. Xizmat fermerlar, o‘qituvchilar, talabalar va keng jamoatchilik uchun ochiq bo‘ladi.
+
+2. Asosiy vazifalar
+- O‘simlik rasmidan kasallikni aniqlovchi AI modelini backendga ulash
+- Foydalanuvchi uchun oddiy va zamonaviy web-interfeys yaratish
+- Har bir natijaga kasallik haqida qisqa ma’lumot va batafsil tavsiyalar biriktirish
+- Rasm va natijalar tarixini ko‘rish imkoniyati
+- Admin panel yordamida so‘rov va foydalanuvchilar faoliyatini boshqarish
+- GEMINI va boshqa AI yordamida kasallikni davolash bo‘yicha individual tavsiyalar berish
+
+3. Funktsional talablar
+
+3.1. Home page (Bosh sahifa)
+- Loyiha haqida batafsil ma’lumot
+- Loyiha afzalliklari va ishlash printsipi
+- Navigatsiya tugmalari: “Sinab ko‘rish”, “Loyiha haqida”, “Yordam”
+
+3.2. Sinab ko‘rish sahifasi
+- Rasm yuklash formasi (jpg, png, max 10 MB)
+- Bashorat qilish tugmasi
+- Natija: kasallik nomi, aniqlik darajasi, qisqa tavsif, AI tavsiyalari
+- Demo-rasmlar bilan test qilish imkoniyati
+- Yuklangan rasmlar va natijalar tarixini ko‘rish
+
+3.3. Admin panel
+- Kiruvchi so‘rovlar va foydalanuvchi yuklagan rasmlar statistikasi
+- Bashoratlar va AI tavsiyalari tarixini kuzatish
+- Kasalliklar ro‘yxatini tahrirlash
+
+3.4. Yordam/FAQ sahifasi
+- “Qanday ishlatish kerak?”
+- Maxfiylik siyosati va xavfsizlik bo‘yicha ma’lumotlar
+
+4. Qo‘shimcha imkoniyatlar (a–g)
+
+a) Interaktiv tavsiyalar va AI yordamida maslahatlar
+- Har bir aniqlangan kasallik uchun avtomatik tarzda AI (GEMINI) yordamida zamonaviy, O‘zbekiston sharoitiga mos, individual tavsiyalar ko‘rsatish
+- Foydalanuvchi savoliga javob beruvchi chat/interaktiv oynasi
+
+b) Kasallik tarixi va monitoring
+- Foydalanuvchi uchun “Mening tekshiruvlarim” bo‘limi (profil orqali yoki sessiyada)
+- Kasalliklar monitoringi va statistik grafiklar
+
+c) Ma’lumotlar bazasini kengaytirish
+- Har bir kasallik uchun to‘liq ma’lumot: alomatlar, sabablar, oldini olish, ekologik va agrotexnik tavsiyalar
+- O‘zbekiston va Markaziy Osiyoga mos dori vositalari va agrotexnik chora-tadbirlar
+
+d) Foydalanuvchi akkaunti va personal kabinet
+- Ro‘yxatdan o‘tgan foydalanuvchilar uchun shaxsiy kabinet
+- Rasmlar va natijalar tarixini eksport qilish (PDF/Excel)
+
+e) API va integratsiyalar
+- Tashqi xizmatlar uchun REST API
+- Telegram/WhatsApp/Google Chat bot integratsiyasi
+- Mobil ilovaga backend tayyorlash (Flutter/React Native va boshqalar)
+
+f) Ko‘p tilda ishlash va ko‘zi ojizlar uchun imkoniyatlar
+- O‘zbek, rus va ingliz tillarini qo‘llab-quvvatlash
+- Nutqni matnga va matnni nutqqa aylantirish imkoniyatlari (voice-to-text, text-to-voice)
+
+g) Mahalliy laboratoriyalar va mutaxassislar bilan bog‘lanish
+- Joylashuv bo‘yicha tavsiya va laboratoriyalar bilan bog‘lanish uchun kontaktlar
+- Hududiy agrotexnik xizmatlar bazasi
+
+5. Texnik yechim va arxitektura
+- Backend: Django 4.x (Python 3.9+)
+- Frontend: Django templates, Tailwind CSS
+- Ma’lumotlar bazasi: SQLite (boshlang‘ich uchun), keyinchalik PostgreSQL
+- AI modeli: PyTorch yoki TensorFlow (models papkasida)
+- AI tavsiyalari: GEMINI API (yoki OpenAI, Groq, Llama kabi boshqa LLM servislar)
+- REST API: Django REST Framework (tashqi xizmatlar uchun)
+- Admin panel: Django default admin
+- Statik fayllar: CSS, JS, demo rasmlar, foydalanuvchi rasmlari
+
+
+7. Loyiha muvaffaqiyat ko‘rsatkichlari
+- Model aniqlik darajasi >90%
+- Har bir natija uchun AI tavsiyasi chiqishi
+- Interfeysning oddiy va foydalanuvchiga qulayligi
+- Demo va real foydalanuvchilar uchun to‘liq ishlash
+- REST API va chat bot integratsiyasining ishlashi
+- 3 tilda xizmat ko‘rsatish
+
+8. Maxfiylik va xavfsizlik
+- Foydalanuvchi ma’lumotlari va yuklangan rasmlar maxfiyligi
+- AI API kalitlarini yashirin saqlash va so‘rovlarni cheklash
+- Demo foydalanuvchilar uchun maxsus cheklovlar
