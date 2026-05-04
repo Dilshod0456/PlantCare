@@ -87,5 +87,6 @@ Thumbs.db
 *.key
 *.crt
 *.p12
+models/
 
 plant_disease_model.h5
